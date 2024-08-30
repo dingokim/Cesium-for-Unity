@@ -1,0 +1,19 @@
+건물 객체화가 구현되어있는 씬은
+Assets/CesiumForUnitySamples/Scenes/03_CesiumSanFrancisco.unity
+입니다.
+
+
+
+
+Cesium for Unity에서 https://demo3d.sistech3d.com 에 타일셋을 요청 할 때 토큰이 필요합니다.
+요청에 토큰을 부여하기 위해서 프록시 서버를 경유하여 요청하게됩니다.
+
+프록시 서버 여는 순서
+
+1. nodejs_server폴더 내에서 터미널을 열고
+> node proxy.js
+입력하여 프록시 서버를 엽니다.
+
+2. Cesium 3D Tileset 컴포넌트를 가지고 있는 게임오브젝트를 찾고, 
+Source 프로퍼티의 Tileset Source를 "From Url"로 설정합니다.
+URL 에는 http://localhost:3000/data/new/mannyeon/tileset.json 를 입력합니다.
