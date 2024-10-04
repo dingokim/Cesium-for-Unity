@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 
 public class MeshChunkManager : MonoBehaviour
 {
-    public GameObject targetObject; // Å¸°Ù ¿ÀºêÁ§Æ® ÁöÁ¤
+    public GameObject targetObject; // íƒ€ê²Ÿ ì˜¤ë¸Œì íŠ¸ ì§€ì •
 
     void Update()
     {
@@ -22,7 +22,7 @@ public class MeshChunkManager : MonoBehaviour
         }
     }
 
-    public void RemoveDisconnectedTrianglesInChild() 
+    public void RemoveDisconnectedTrianglesInChild()
     {
         RemoveDisconnectedTriangles(gameObject.transform.GetChild(0).gameObject);
     }
@@ -38,7 +38,7 @@ public class MeshChunkManager : MonoBehaviour
         List<HashSet<int>> triangleGroups = new List<HashSet<int>>();
         HashSet<int> visitedTriangles = new HashSet<int>();
 
-        // ¸ğµç »ï°¢Çü¿¡ ´ëÇØ BFS¸¦ ¼öÇàÇÏ¿© ±×·ìÈ­
+        // ëª¨ë“  ì‚¼ê°í˜•ì— ëŒ€í•´ BFSë¥¼ ìˆ˜í–‰í•˜ì—¬ ê·¸ë£¹í™”
         for (int i = 0; i < triangles.Length / 3; i++)
         {
             if (!visitedTriangles.Contains(i))
@@ -53,7 +53,7 @@ public class MeshChunkManager : MonoBehaviour
                     int currentTriangleIndex = triangleQueue.Dequeue();
                     currentGroup.Add(currentTriangleIndex);
 
-                    // ÇöÀç »ï°¢Çü°ú ¿¬°áµÈ »ï°¢ÇüÀ» Å½»ö
+                    // í˜„ì¬ ì‚¼ê°í˜•ê³¼ ì—°ê²°ëœ ì‚¼ê°í˜•ì„ íƒìƒ‰
                     for (int j = 0; j < triangles.Length / 3; j++)
                     {
                         if (!visitedTriangles.Contains(j) && IsTriangleConnected(vertices, triangles, currentTriangleIndex, j))
@@ -68,7 +68,7 @@ public class MeshChunkManager : MonoBehaviour
             }
         }
 
-        // °¡Àå Å« »ï°¢Çü ±×·ìÀ» Ã£±â
+        // ê°€ì¥ í° ì‚¼ê°í˜• ê·¸ë£¹ì„ ì°¾ê¸°
         HashSet<int> largestChunk = null;
         int maxGroupSize = 0;
 
@@ -81,11 +81,11 @@ public class MeshChunkManager : MonoBehaviour
             }
         }
 
-        // »õ·Î¿î ¸Ş½¬ »ı¼º
+        // ìƒˆë¡œìš´ ë©”ì‰¬ ìƒì„±
         List<Vector3> newVertices = new List<Vector3>();
-        List<Vector2> newUVs = new List<Vector2>(); // »õ·Î Á¤·ÄµÈ UV ÁÂÇ¥
+        List<Vector2> newUVs = new List<Vector2>(); // ìƒˆë¡œ ì •ë ¬ëœ UV ì¢Œí‘œ
         List<int> newTriangles = new List<int>();
-        Dictionary<int, int> vertexMap = new Dictionary<int, int>(); // ¿ø·¡ ÀÎµ¦½º¸¦ »õ ÀÎµ¦½º·Î ¸ÅÇÎ
+        Dictionary<int, int> vertexMap = new Dictionary<int, int>(); // ì›ë˜ ì¸ë±ìŠ¤ë¥¼ ìƒˆ ì¸ë±ìŠ¤ë¡œ ë§¤í•‘
 
         foreach (int triangleIndex in largestChunk)
         {
@@ -97,7 +97,7 @@ public class MeshChunkManager : MonoBehaviour
                 {
                     vertexMap[oldIndex] = newVertices.Count;
                     newVertices.Add(vertices[oldIndex]);
-                    newUVs.Add(uvs[oldIndex]); // UV ÁÂÇ¥µµ °°ÀÌ Ãß°¡
+                    newUVs.Add(uvs[oldIndex]); // UV ì¢Œí‘œë„ ê°™ì´ ì¶”ê°€
                 }
 
                 newTriangles.Add(vertexMap[oldIndex]);
@@ -114,7 +114,7 @@ public class MeshChunkManager : MonoBehaviour
 
         meshFilter.mesh = newMesh;
 
-        // collider¸¦ °»½Å
+        // colliderë¥¼ ê°±ì‹ 
         MeshCollider meshCollider = target.GetComponent<MeshCollider>();
         if (meshCollider != null)
         {
@@ -125,53 +125,53 @@ public class MeshChunkManager : MonoBehaviour
 
     bool IsTriangleConnected(Vector3[] vertices, int[] triangles, int triangleIndex1, int triangleIndex2)
     {
-        // »ï°¢Çü 1ÀÇ AABB °è»ê
+        // ì‚¼ê°í˜• 1ì˜ AABB ê³„ì‚°
         Bounds bounds1 = new Bounds(vertices[triangles[triangleIndex1 * 3]], Vector3.zero);
         bounds1.Encapsulate(vertices[triangles[triangleIndex1 * 3 + 1]]);
         bounds1.Encapsulate(vertices[triangles[triangleIndex1 * 3 + 2]]);
 
-        // »ï°¢Çü 2ÀÇ AABB °è»ê
+        // ì‚¼ê°í˜• 2ì˜ AABB ê³„ì‚°
         Bounds bounds2 = new Bounds(vertices[triangles[triangleIndex2 * 3]], Vector3.zero);
         bounds2.Encapsulate(vertices[triangles[triangleIndex2 * 3 + 1]]);
         bounds2.Encapsulate(vertices[triangles[triangleIndex2 * 3 + 2]]);
 
-        // AABB°¡ °ãÄ¡´ÂÁö È®ÀÎ (ºü¸¥ ÇÊÅÍ¸µ)
+        // AABBê°€ ê²¹ì¹˜ëŠ”ì§€ í™•ì¸ (ë¹ ë¥¸ í•„í„°ë§)
         if (!bounds1.Intersects(bounds2))
             return false;
 
-        // AABB°¡ °ãÄ¡´Â °æ¿ì¿¡¸¸ Á¤È®ÇÑ °Å¸® °è»ê
+        // AABBê°€ ê²¹ì¹˜ëŠ” ê²½ìš°ì—ë§Œ ì •í™•í•œ ê±°ë¦¬ ê³„ì‚°
         return CheckExactTriangleDistance(vertices, triangles, triangleIndex1, triangleIndex2);
     }
 
     bool CheckExactTriangleDistance(Vector3[] vertices, int[] triangles, int triangleIndex1, int triangleIndex2)
     {
-        // »ï°¢Çü 1ÀÇ Á¤Á¡µé
+        // ì‚¼ê°í˜• 1ì˜ ì •ì ë“¤
         Vector3 v1_1 = vertices[triangles[triangleIndex1 * 3]];
         Vector3 v1_2 = vertices[triangles[triangleIndex1 * 3 + 1]];
         Vector3 v1_3 = vertices[triangles[triangleIndex1 * 3 + 2]];
 
-        // »ï°¢Çü 2ÀÇ Á¤Á¡µé
+        // ì‚¼ê°í˜• 2ì˜ ì •ì ë“¤
         Vector3 v2_1 = vertices[triangles[triangleIndex2 * 3]];
         Vector3 v2_2 = vertices[triangles[triangleIndex2 * 3 + 1]];
         Vector3 v2_3 = vertices[triangles[triangleIndex2 * 3 + 2]];
 
-        float tolerance = 0.01f; // °Å¸® ºñ±³¸¦ À§ÇÑ Çã¿ë ¿ÀÂ÷
+        float tolerance = 0.01f; // ê±°ë¦¬ ë¹„êµë¥¼ ìœ„í•œ í—ˆìš© ì˜¤ì°¨
 
-        // »ï°¢Çü 1ÀÇ ¼¼ º¯
+        // ì‚¼ê°í˜• 1ì˜ ì„¸ ë³€
         Vector3[] edges1 = {
         v1_2 - v1_1,
         v1_3 - v1_2,
         v1_1 - v1_3
     };
 
-        // »ï°¢Çü 2ÀÇ ¼¼ º¯
+        // ì‚¼ê°í˜• 2ì˜ ì„¸ ë³€
         Vector3[] edges2 = {
         v2_2 - v2_1,
         v2_3 - v2_2,
         v2_1 - v2_3
     };
 
-        // ¸ğµç º¯ °£ÀÇ ÃÖ¼Ò °Å¸® °è»ê
+        // ëª¨ë“  ë³€ ê°„ì˜ ìµœì†Œ ê±°ë¦¬ ê³„ì‚°
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)

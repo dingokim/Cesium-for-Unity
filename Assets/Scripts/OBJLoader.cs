@@ -26,7 +26,7 @@ public class OBJLoader
         {
             if (line.StartsWith("mtllib "))
             {
-                // .mtl ÆÄÀÏ ·Îµå
+                // .mtl íŒŒì¼ ë¡œë“œ
                 string mtlFileName = line.Substring(7).Trim();
                 LoadMTLFile(Path.Combine(objDirectory, mtlFileName));
             }
@@ -58,7 +58,7 @@ public class OBJLoader
             }
             else if (line.StartsWith("usemtl "))
             {
-                // ÀçÁú ¼³Á¤
+                // ì¬ì§ˆ ì„¤ì •
                 string materialName = line.Substring(7).Trim();
                 if (materials.ContainsKey(materialName))
                 {
@@ -100,7 +100,7 @@ public class OBJLoader
     {
         if (!File.Exists(mtlPath))
         {
-            Debug.LogError("MTL ÆÄÀÏÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù: " + mtlPath);
+            Debug.LogError("MTL íŒŒì¼ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤: " + mtlPath);
             return;
         }
 

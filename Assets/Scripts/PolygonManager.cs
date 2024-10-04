@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using CesiumForUnity;
 using UnityEngine;
@@ -22,8 +22,8 @@ public class PolygonManager : MonoBehaviour
 
     private List<Vector3> polygonVertices;
 
-    float topY;
-    float bottomY;
+    float topY = -600;
+    float bottomY = -1000;
 
     public Material areaMaterial;
 
@@ -33,7 +33,7 @@ public class PolygonManager : MonoBehaviour
     private GameObject lastSphere;
     private Vector3 firstVertex;
     private Vector3 lastVertex;
-    
+
     public CesiumGeoreference georeference;
 
     public string serverIP = "129.254.193.41";
@@ -63,8 +63,6 @@ public class PolygonManager : MonoBehaviour
         ResetPolygon();
 
         //cookieCutterInstance = new CookieCutter_light();
-        cookieCutterInstance = new CookieCutter();
-        cookieCutterInstance.polygonManager = this.gameObject;
     }
 
     // Update is called once per frame
@@ -78,23 +76,34 @@ public class PolygonManager : MonoBehaviour
             GetPolygonFromDB();
         }
 
-        
+
     }
 
-    public void CutCookies() 
+    public void CutCookies()
     {
-        if (state != polygonState.complete) 
+        //ì¿ í‚¤ì»¤í„° ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
+        cookieCutterInstance = new CookieCutter();
+        cookieCutterInstance.polygonManager = this.gameObject;
+
+        if (state != polygonState.complete)
         {
-            Debug.Log("polygonÀÌ ¿ÂÀüÇÏÁö ¾Ê¾Æ CutÀ» ¼öÇàÇÒ ¼ö ¾ø½À´Ï´Ù.");
+            Debug.Log("polygonì´ ì˜¨ì „í•˜ì§€ ì•Šì•„ Cutì„ ìˆ˜í–‰í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
         Vector3[] polygon = polygonVertices.ToArray();
 
+        string verts = "";
+        foreach (Vector3 vert in polygon) 
+        {
+            verts += $"{vert} ";
+        }
+        Debug.Log("verts :" + verts);
+
         foreach (GameObject target in targets)
         {
-            Debug.Log(target.name + " CookieCut È£Ãâ");
-            GameObject targetPiece = cookieCutterInstance.CookieCut(target,polygon);
+            //Debug.Log(target.name + " CookieCut í˜¸ì¶œ");
+            GameObject targetPiece = cookieCutterInstance.CookieCut(target, polygon);
 
             if (ParentTransform != null)
             {
@@ -103,6 +112,10 @@ public class PolygonManager : MonoBehaviour
         }
 
         ResetPolygon();
+
+        //ì¿ í‚¤ì»¤í„° ì¸ìŠ¤í„´ìŠ¤ ì‚­ì œ í›„ ë°˜í™˜
+        cookieCutterInstance = null;
+        GC.Collect();
     }
 
 
@@ -125,7 +138,7 @@ public class PolygonManager : MonoBehaviour
                 firstVertex = hit.point;
                 lastVertex = hit.point;
 
-                //½ÃÀÛÁ¡ÀÇ À§Ä¡¿¡ sphere¸¦ »ı¼ºÇÕ´Ï´Ù
+                //ì‹œì‘ì ì˜ ìœ„ì¹˜ì— sphereë¥¼ ìƒì„±í•©ë‹ˆë‹¤
                 firstSphere = lastSphere = Instantiate(spherePrefab, hit.point, Quaternion.identity);
                 lastSphere.transform.parent = transform;
                 lastSphere.name = "Polygon Vertex #" + polygonVertices.Count.ToString();
@@ -133,28 +146,28 @@ public class PolygonManager : MonoBehaviour
             else if (state == polygonState.creating)
             {
 
-                //»õ·Î ¸¸µé¾îÁø ¼±ºĞÀÌ ÀÌÀü ¼±ºĞ°ú ±³Â÷µÈ´Ù¸é Æú¸®°ïÀ» ÀÌ·ê ¼ö ¾øÀ¸¹Ç·Î ¾Æ¹«°Íµµ ¼öÇàÇÏÁö¾Ê½À´Ï´Ù.
+                //ìƒˆë¡œ ë§Œë“¤ì–´ì§„ ì„ ë¶„ì´ ì´ì „ ì„ ë¶„ê³¼ êµì°¨ëœë‹¤ë©´ í´ë¦¬ê³¤ì„ ì´ë£° ìˆ˜ ì—†ìœ¼ë¯€ë¡œ ì•„ë¬´ê²ƒë„ ìˆ˜í–‰í•˜ì§€ì•ŠìŠµë‹ˆë‹¤.
                 for (int i = 0; i < polygonVertices.Count - 1; i++)
                 {
                     Vector3 v1 = polygonVertices[i];
                     Vector3 v2 = polygonVertices[i + 1];
                     if (DoLinesIntersect(v1, v2, lastVertex, hit.point))
                     {
-                        Debug.Log("ÇØ´ç ÁÂÇ¥´Â Æú¸®°ïÀ» ¸¸µé ¼ö ¾ø½À´Ï´Ù. ´Ù¸¥ ÁÂÇ¥¸¦ ¼±ÅÃÇÏ¼¼¿ä.");
+                        Debug.Log("í•´ë‹¹ ì¢Œí‘œëŠ” í´ë¦¬ê³¤ì„ ë§Œë“¤ ìˆ˜ ì—†ìŠµë‹ˆë‹¤. ë‹¤ë¥¸ ì¢Œí‘œë¥¼ ì„ íƒí•˜ì„¸ìš”.");
                         return;
                     }
                 }
 
-                //polygonVertices¿Í lastVertex¸¦ °»½ÅÇÕ´Ï´Ù.
+                //polygonVerticesì™€ lastVertexë¥¼ ê°±ì‹ í•©ë‹ˆë‹¤.
                 polygonVertices.Add(hit.point);
                 lastVertex = hit.point;
 
-                //Sphere¸¦ »ı¼ºÇÕ´Ï´Ù.
+                //Sphereë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
                 lastSphere = Instantiate(spherePrefab, hit.point, Quaternion.identity);
                 lastSphere.transform.parent = transform;
                 lastSphere.name = "Polygon Vertex #" + polygonVertices.Count.ToString();
 
-                //¸éÀ» »ı¼ºÇÕ´Ï´Ù.
+                //ë©´ì„ ìƒì„±í•©ë‹ˆë‹¤.
             }
             else
             {
@@ -163,6 +176,7 @@ public class PolygonManager : MonoBehaviour
         }
 
     }
+
 
     private bool DoLinesIntersect(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4)
     {
@@ -187,55 +201,56 @@ public class PolygonManager : MonoBehaviour
         return (0 < t1 && t1 < 1) && (0 < t2 && t2 < 1);
     }
 
+
     public void CompletePolygon()
     {
-        //Á¤Á¡ÀÇ °³¼ö°¡ 3°³ ÀÌ»óÀÎÁö È®ÀÎÇÕ´Ï´Ù.
+        //ì •ì ì˜ ê°œìˆ˜ê°€ 3ê°œ ì´ìƒì¸ì§€ í™•ì¸í•©ë‹ˆë‹¤.
         if (polygonVertices.Count < 3)
         {
-            Debug.Log("Æú¸®°ïÀÇ Á¤Á¡Àº ÃÖ¼Ò 3°³ÀÔ´Ï´Ù.");
+            Debug.Log("í´ë¦¬ê³¤ì˜ ì •ì ì€ ìµœì†Œ 3ê°œì…ë‹ˆë‹¤.");
             return;
         }
 
-        //»õ·Î ¸¸µé¾îÁø ¼±ºĞÀÌ ÀÌÀü ¼±ºĞ°ú ±³Â÷µÈ´Ù¸é Æú¸®°ïÀ» ÀÌ·ê ¼ö ¾øÀ¸¹Ç·Î ¾Æ¹«°Íµµ ¼öÇàÇÏÁö¾Ê½À´Ï´Ù.
+        //ìƒˆë¡œ ë§Œë“¤ì–´ì§„ ì„ ë¶„ì´ ì´ì „ ì„ ë¶„ê³¼ êµì°¨ëœë‹¤ë©´ í´ë¦¬ê³¤ì„ ì´ë£° ìˆ˜ ì—†ìœ¼ë¯€ë¡œ ì•„ë¬´ê²ƒë„ ìˆ˜í–‰í•˜ì§€ì•ŠìŠµë‹ˆë‹¤.
         for (int i = 0; i < polygonVertices.Count - 1; i++)
         {
             Vector3 v1 = polygonVertices[i];
             Vector3 v2 = polygonVertices[i + 1];
             if (DoLinesIntersect(v1, v2, lastVertex, firstVertex))
             {
-                Debug.Log("ÇØ´ç ÁÂÇ¥´Â Æú¸®°ïÀ» ¸¸µé ¼ö ¾ø½À´Ï´Ù. ´Ù¸¥ ÁÂÇ¥¸¦ ¼±ÅÃÇÏ¼¼¿ä.");
+                Debug.Log("í•´ë‹¹ ì¢Œí‘œëŠ” í´ë¦¬ê³¤ì„ ë§Œë“¤ ìˆ˜ ì—†ìŠµë‹ˆë‹¤. ë‹¤ë¥¸ ì¢Œí‘œë¥¼ ì„ íƒí•˜ì„¸ìš”.");
                 return;
             }
         }
 
-        //state¸¦ °»½ÅÇÕ´Ï´Ù.
+        //stateë¥¼ ê°±ì‹ í•©ë‹ˆë‹¤.
         state = polygonState.complete;
 
-        //Area¸¦ »ı¼ºÇÕ´Ï´Ù.
+        //Area ì˜¤ë¸Œì íŠ¸ë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
         GenerateArea();
 
-        //Area¿Í Á¢ÃËÁßÀÎ ¿ÀºêÁ§Æ®µéÀ» ¸®½ºÆ®¿¡ ´ã½À´Ï´Ù.
+        //Areaì™€ ì ‘ì´‰ì¤‘ì¸ ì˜¤ë¸Œì íŠ¸ë“¤ì„ ë¦¬ìŠ¤íŠ¸ì— ë‹´ìŠµë‹ˆë‹¤.
         targets = GetContactedObjects();
 
-        Debug.Log("Polygon Area°¡ Á¤»óÀûÀ¸·Î »ı¼ºµÇ¾ú½À´Ï´Ù.");
+        Debug.Log("Polygon Areaê°€ ì •ìƒì ìœ¼ë¡œ ìƒì„±ë˜ì—ˆìŠµë‹ˆë‹¤.");
         return;
     }
 
     public void ResetPolygon()
     {
-        //º¯¼ö¸¦ °»½ÅÇÕ´Ï´Ù.
+        //ë³€ìˆ˜ë¥¼ ê°±ì‹ í•©ë‹ˆë‹¤.
         polygonVertices.Clear();
         state = polygonState.empty;
 
 
-        //vertex ¿ÀºêÁ§Æ®¸¦ Áö¿ó´Ï´Ù.
+        //vertex ì˜¤ë¸Œì íŠ¸ë¥¼ ì§€ì›ë‹ˆë‹¤.
         foreach (Transform child in gameObject.transform)
         {
             Destroy(child.gameObject);
         }
 
 
-        //Area¸¦ Áö¿ó´Ï´Ù.
+        //Areaë¥¼ ì§€ì›ë‹ˆë‹¤.
         MeshFilter myMeshFilter = gameObject.GetComponent<MeshFilter>();
         if (myMeshFilter != null) Destroy(myMeshFilter);
         MeshRenderer myMeshRenderer = gameObject.GetComponent<MeshRenderer>();
@@ -260,46 +275,46 @@ public class PolygonManager : MonoBehaviour
 
             if (georeference != null)
             {
-                // Unity ÁÂÇ¥¸¦ ECEF ÁÂÇ¥·Î º¯È¯
+                // Unity ì¢Œí‘œë¥¼ ECEF ì¢Œí‘œë¡œ ë³€í™˜
                 double3 doublePosition = new double3(hitPoint.x, hitPoint.y, hitPoint.z);
                 double3 ecef = georeference.TransformUnityPositionToEarthCenteredEarthFixed(doublePosition);
 
-                // ECEF ÁÂÇ¥¸¦ À§°æµµ ¹× °íµµ·Î º¯È¯
+                // ECEF ì¢Œí‘œë¥¼ ìœ„ê²½ë„ ë° ê³ ë„ë¡œ ë³€í™˜
                 double latitude, longitude, height;
                 ECEFToLatLonHeight(ecef, out latitude, out longitude, out height);
 
 
-                // ÁÂÇ¥ÀÇ À§°æµµ °ªÀ» Ãâ·Â
+                // ì¢Œí‘œì˜ ìœ„ê²½ë„ ê°’ì„ ì¶œë ¥
                 Debug.Log("Cesium Coordinates: Lat: " + latitude + ", Lon: " + longitude + ", Height: " + height);
 
 
-                // À§°æµµ°ªÀº TCP ¼ÒÄÏÀ¸·Î ¼Û½ÅÇÏ°í polygon Á¤º¸¸¦ responseData¿¡ ÀúÀåÇÕ´Ï´Ù.
+                // ìœ„ê²½ë„ê°’ì€ TCP ì†Œì¼“ìœ¼ë¡œ ì†¡ì‹ í•˜ê³  polygon ì •ë³´ë¥¼ responseDataì— ì €ì¥í•©ë‹ˆë‹¤.
                 SendCoordinates(latitude, longitude);
 
-                // polygonÀ» Á¤»óÀûÀ¸·Î ¼ö½ÅÇß´Ù¸é 
+                // polygonì„ ì •ìƒì ìœ¼ë¡œ ìˆ˜ì‹ í–ˆë‹¤ë©´ 
                 if (responseData != null)
                 {
-                    //responseData¸¦ ÇØ¼®ÇÏ¿© Vector3[] polygonÀ» °»½ÅÇÕ´Ï´Ù.
+                    //responseDataë¥¼ í•´ì„í•˜ì—¬ Vector3[] polygonì„ ê°±ì‹ í•©ë‹ˆë‹¤.
                     polygonVertices = ParsePolygon(responseData);
 
 
-                    //Æú¸®°ï ¿µ¿ª¿¡ ÆĞµùÀ» ¾º¿ó´Ï´Ù.
+                    //í´ë¦¬ê³¤ ì˜ì—­ì— íŒ¨ë”©ì„ ì”Œì›ë‹ˆë‹¤.
                     polygonVertices = OffsetPolygon(polygonVertices, paddingDistance);
 
 
-                    //state¸¦ °»½ÅÇÕ´Ï´Ù.
+                    //stateë¥¼ ê°±ì‹ í•©ë‹ˆë‹¤.
                     state = polygonState.complete;
 
-                    //Area¸¦ »ı¼ºÇÕ´Ï´Ù.
+                    //Areaë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
                     GenerateArea();
 
-                    //Area¿Í Á¢ÃËÁßÀÎ ¿ÀºêÁ§Æ®µéÀ» ¸®½ºÆ®¿¡ ´ã½À´Ï´Ù.
+                    //Areaì™€ ì ‘ì´‰ì¤‘ì¸ ì˜¤ë¸Œì íŠ¸ë“¤ì„ ë¦¬ìŠ¤íŠ¸ì— ë‹´ìŠµë‹ˆë‹¤.
                     targets = GetContactedObjects();
 
-                    Debug.Log("Polygon Area°¡ Á¤»óÀûÀ¸·Î »ı¼ºµÇ¾ú½À´Ï´Ù.");
+                    Debug.Log("Polygon Areaê°€ ì •ìƒì ìœ¼ë¡œ ìƒì„±ë˜ì—ˆìŠµë‹ˆë‹¤.");
                 }
             }
-            else 
+            else
             {
                 Debug.LogError("CesiumGeoreference not found.");
             }
@@ -312,9 +327,9 @@ public class PolygonManager : MonoBehaviour
         double y = ecef.y;
         double z = ecef.z;
 
-        // WGS84 ±âÁØ Áö±¸ ¹İ°æ°ú ÆíÆò·ü
-        double a = 6378137.0; // Áö±¸ÀÇ Àûµµ ¹İ°æ
-        double e = 8.1819190842622e-2; // ÆíÆò·ü
+        // WGS84 ê¸°ì¤€ ì§€êµ¬ ë°˜ê²½ê³¼ í¸í‰ë¥ 
+        double a = 6378137.0; // ì§€êµ¬ì˜ ì ë„ ë°˜ê²½
+        double e = 8.1819190842622e-2; // í¸í‰ë¥ 
 
         double b = Mathf.Sqrt((float)(a * a * (1 - e * e)));
         double ep = Mathf.Sqrt((float)((a * a - b * b) / (b * b)));
@@ -327,18 +342,18 @@ public class PolygonManager : MonoBehaviour
         double N = a / Mathf.Sqrt((float)(1 - e * e * Mathf.Sin((float)latitude) * Mathf.Sin((float)latitude)));
         height = p / Mathf.Cos((float)latitude) - N;
 
-        // ¶óµğ¾È °ªÀ» µµ ´ÜÀ§·Î º¯È¯
+        // ë¼ë””ì•ˆ ê°’ì„ ë„ ë‹¨ìœ„ë¡œ ë³€í™˜
         latitude = latitude * (180.0 / Mathf.PI);
         longitude = longitude * (180.0 / Mathf.PI);
     }
 
     void LatLonHeightToECEF(double latitude, double longitude, double height, out double3 ecef)
     {
-        // WGS84 ±âÁØ Áö±¸ ¹İ°æ°ú ÆíÆò·ü
-        double a = 6378137.0; // Áö±¸ÀÇ Àûµµ ¹İ°æ
-        double e = 8.1819190842622e-2; // ÆíÆò·ü
+        // WGS84 ê¸°ì¤€ ì§€êµ¬ ë°˜ê²½ê³¼ í¸í‰ë¥ 
+        double a = 6378137.0; // ì§€êµ¬ì˜ ì ë„ ë°˜ê²½
+        double e = 8.1819190842622e-2; // í¸í‰ë¥ 
 
-        // µµ ´ÜÀ§¸¦ ¶óµğ¾È ´ÜÀ§·Î º¯È¯
+        // ë„ ë‹¨ìœ„ë¥¼ ë¼ë””ì•ˆ ë‹¨ìœ„ë¡œ ë³€í™˜
         latitude = latitude * (Mathf.PI / 180.0);
         longitude = longitude * (Mathf.PI / 180.0);
 
@@ -351,7 +366,7 @@ public class PolygonManager : MonoBehaviour
         ecef = new double3(x, y, z);
     }
 
-    // À§°æµµ¸¦ ÀÔ·Â¹Ş¾Æ ¼­¹ö·Î Àü¼ÛÇÏ°í ÀÀ´äÀ» ¹Ş´Â ¸Ş¼­µå
+    // ìœ„ê²½ë„ë¥¼ ì…ë ¥ë°›ì•„ ì„œë²„ë¡œ ì „ì†¡í•˜ê³  ì‘ë‹µì„ ë°›ëŠ” ë©”ì„œë“œ
     public void SendCoordinates(double latitude, double longitude)
     {
         try
@@ -360,21 +375,21 @@ public class PolygonManager : MonoBehaviour
             {
                 NetworkStream stream = client.GetStream();
 
-                // À§°æµµ¸¦ ¼­¹ö¿¡ º¸³¾ µ¥ÀÌÅÍ·Î Æ÷¸ËÆÃ
+                // ìœ„ê²½ë„ë¥¼ ì„œë²„ì— ë³´ë‚¼ ë°ì´í„°ë¡œ í¬ë§·íŒ…
                 string message = $"{latitude},{longitude}";
                 byte[] data = Encoding.UTF8.GetBytes(message);
 
-                // ¼­¹ö·Î µ¥ÀÌÅÍ Àü¼Û
+                // ì„œë²„ë¡œ ë°ì´í„° ì „ì†¡
                 stream.Write(data, 0, data.Length);
                 Debug.Log($"Sent: {message}");
 
-                // ¼­¹ö·ÎºÎÅÍ ÀÀ´ä ¼ö½Å
+                // ì„œë²„ë¡œë¶€í„° ì‘ë‹µ ìˆ˜ì‹ 
                 data = new byte[2048];
                 int bytes = stream.Read(data, 0, data.Length);
                 responseData = Encoding.UTF8.GetString(data, 0, bytes);
                 Debug.Log($"Received: {responseData}");
 
-                // ¼­¹ö ÀÀ´ä Ã³¸®
+                // ì„œë²„ ì‘ë‹µ ì²˜ë¦¬
                 HandleServerResponse(responseData);
                 //Thread.Sleep(500);
             }
@@ -385,52 +400,52 @@ public class PolygonManager : MonoBehaviour
         }
     }
 
-    // ¼­¹öÀÇ ÀÀ´äÀ» Ã³¸®ÇÏ´Â ¸Ş¼­µå
+    // ì„œë²„ì˜ ì‘ë‹µì„ ì²˜ë¦¬í•˜ëŠ” ë©”ì„œë“œ
     private void HandleServerResponse(string response)
     {
-        if (response == "¿µ¿ª³»¿¡ ÇØ´çÇÏ´Â ÁÂÇ¥°¡ ¾ø½À´Ï´Ù.")
+        if (response == "ì˜ì—­ë‚´ì— í•´ë‹¹í•˜ëŠ” ì¢Œí‘œê°€ ì—†ìŠµë‹ˆë‹¤.")
         {
-            Debug.Log("ÇØ´ç ÁÂÇ¥¸¦ Æ÷ÇÔÇÏ´Â Æú¸®°ïÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.Log("í•´ë‹¹ ì¢Œí‘œë¥¼ í¬í•¨í•˜ëŠ” í´ë¦¬ê³¤ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             response = null;
         }
         else
         {
-            Debug.Log($"Æú¸®°ï Á¤º¸: {response}");
-            // ¿©±â¼­ ¹ŞÀº Æú¸®°ï Á¤º¸¸¦ È°¿ëÇÒ ¼ö ÀÖ½À´Ï´Ù.
+            Debug.Log($"í´ë¦¬ê³¤ ì •ë³´: {response}");
+            // ì—¬ê¸°ì„œ ë°›ì€ í´ë¦¬ê³¤ ì •ë³´ë¥¼ í™œìš©í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
         }
     }
 
 
     List<Vector3> ParsePolygon(string response)
     {
-        // "MULTIPOLYGON(((" ºÎºĞÀ» Á¦°ÅÇÏ°í, ¸¶Áö¸· ")))"µµ Á¦°Å
+        // "MULTIPOLYGON(((" ë¶€ë¶„ì„ ì œê±°í•˜ê³ , ë§ˆì§€ë§‰ ")))"ë„ ì œê±°
         string coords = response.Replace("MULTIPOLYGON(((", "").Replace(")))", "");
 
-        // ÁÂÇ¥ ¹®ÀÚ¿­À» ºĞ¸®ÇÏ¿© ¹è¿­·Î º¯È¯
+        // ì¢Œí‘œ ë¬¸ìì—´ì„ ë¶„ë¦¬í•˜ì—¬ ë°°ì—´ë¡œ ë³€í™˜
         string[] pairs = coords.Split(',');
 
         List<Vector3> polygonPoints = new List<Vector3>();
 
-        Debug.Log("polygon vertex ¼ö : " + pairs.Length + "°³");
+        Debug.Log("polygon vertex ìˆ˜ : " + pairs.Length + "ê°œ");
 
         for (int i = 0; i < pairs.Length; i++)
         {
-            // °¢ ÁÂÇ¥½ÖÀ» °ø¹éÀ¸·Î ºĞ¸®javascript:page(110622)
+            // ê° ì¢Œí‘œìŒì„ ê³µë°±ìœ¼ë¡œ ë¶„ë¦¬javascript:page(110622)
             string[] xy = pairs[i].Trim().Split(' ');
 
             double x = double.Parse(xy[0], CultureInfo.InvariantCulture);
             double z = double.Parse(xy[1], CultureInfo.InvariantCulture);
 
-            // ÁÂÇ¥ º¯È¯ (EPSG:5186 -> WGS84)
+            // ì¢Œí‘œ ë³€í™˜ (EPSG:5186 -> WGS84)
             double latitude, longitude;
-            ConvertEPSG5186ToWGS84(x,z,out latitude,out longitude);
+            ConvertEPSG5186ToWGS84(x, z, out latitude, out longitude);
 
-            // WGS84 ÁÂÇ¥¸¦ Unity ÁÂÇ¥·Î º¯È¯
-            Vector3 unityPoint = ConvertWGS84ToUnity(latitude,longitude);
+            // WGS84 ì¢Œí‘œë¥¼ Unity ì¢Œí‘œë¡œ ë³€í™˜
+            Vector3 unityPoint = ConvertWGS84ToUnity(latitude, longitude);
 
-            Debug.Log($"{i}¹øÂ° polygon : {unityPoint}");
+            Debug.Log($"{i}ë²ˆì§¸ polygon : {unityPoint}");
 
-            // ¸¶Áö¸· vertex´Â ÀúÀåÇÏÁö ¾ÊÀ½. (Ã¹ vertex¿Í Áßº¹)
+            // ë§ˆì§€ë§‰ vertexëŠ” ì €ì¥í•˜ì§€ ì•ŠìŒ. (ì²« vertexì™€ ì¤‘ë³µ)
             if (i != pairs.Length - 1)
             {
                 polygonPoints.Add(unityPoint);
@@ -441,30 +456,33 @@ public class PolygonManager : MonoBehaviour
     }
 
 
+    // ì˜ë¼ë‚¼ ë²”ìœ„ì— í•´ë‹¹í•˜ëŠ” ì…ì²´ê¸°ë‘¥ì„ ìƒì„±
     void GenerateArea()
     {
-        // À­¸é°ú ¾Æ·§¸éÀÇ ²ÀÁöÁ¡µé »ı¼º
+        // ìœ—ë©´ê³¼ ì•„ë«ë©´ì˜ ê¼­ì§€ì ë“¤ ìƒì„±
         List<Vector3> topVertices = new List<Vector3>();
         List<Vector3> bottomVertices = new List<Vector3>();
 
+        int vc = 0;
         foreach (Vector3 vertex in polygonVertices)
         {
+            vc++;
             topVertices.Add(new Vector3(vertex.x, topY, vertex.z));
             bottomVertices.Add(new Vector3(vertex.x, bottomY, vertex.z));
         }
 
-        // Mesh »ı¼º
+        // Mesh ìƒì„±
         Mesh mesh = new Mesh();
 
-        // ²ÀÁöÁ¡µé ¸®½ºÆ®
+        // ê¼­ì§€ì ë“¤ ë¦¬ìŠ¤íŠ¸
         List<Vector3> vertices = new List<Vector3>();
-        vertices.AddRange(topVertices);      // À­¸é
-        vertices.AddRange(bottomVertices);   // ¾Æ·§¸é
+        vertices.AddRange(topVertices);      // ìœ—ë©´
+        vertices.AddRange(bottomVertices);   // ì•„ë«ë©´
 
-        // »ï°¢Çüµé ¸®½ºÆ®
+        // ì‚¼ê°í˜•ë“¤ ë¦¬ìŠ¤íŠ¸
         List<int> triangles = new List<int>();
 
-        // À­¸é »ï°¢Çüµé »ı¼º
+        // ìœ—ë©´ ì‚¼ê°í˜•ë“¤ ìƒì„±
         for (int i = 1; i < polygonVertices.Count - 1; i++)
         {
             triangles.Add(0);
@@ -472,7 +490,7 @@ public class PolygonManager : MonoBehaviour
             triangles.Add(i + 1);
         }
 
-        // ¾Æ·§¸é »ï°¢Çüµé »ı¼º (¹İ´ë ¹æÇâÀ¸·Î)
+        // ì•„ë«ë©´ ì‚¼ê°í˜•ë“¤ ìƒì„± (ë°˜ëŒ€ ë°©í–¥ìœ¼ë¡œ)
         int offset = polygonVertices.Count;
         for (int i = 1; i < polygonVertices.Count - 1; i++)
         {
@@ -481,45 +499,53 @@ public class PolygonManager : MonoBehaviour
             triangles.Add(offset + i);
         }
 
-        // ¿·¸é »ï°¢Çüµé »ı¼º
+        // ì˜†ë©´ ì‚¼ê°í˜•ë“¤ ìƒì„±
         for (int i = 0; i < polygonVertices.Count; i++)
         {
             int next = (i + 1) % polygonVertices.Count;
 
-            // Ã¹ ¹øÂ° »ï°¢Çü
+            // ì²« ë²ˆì§¸ ì‚¼ê°í˜•
             triangles.Add(i);
             triangles.Add(next);
             triangles.Add(offset + next);
 
-            // µÎ ¹øÂ° »ï°¢Çü
+            // ë‘ ë²ˆì§¸ ì‚¼ê°í˜•
             triangles.Add(i);
             triangles.Add(offset + next);
             triangles.Add(offset + i);
         }
 
-        // Mesh ¼³Á¤
+        // Mesh ì„¤ì •
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
 
-        // MeshFilter¿Í MeshRenderer ÄÄÆ÷³ÍÆ® Ãß°¡
-        MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
+        // MeshFilterì™€ MeshRenderer ì»´í¬ë„ŒíŠ¸ ì¶”ê°€
+        MeshFilter meshFilter;
+        if (gameObject.GetComponent<MeshFilter>() == null) meshFilter = gameObject.AddComponent<MeshFilter>();
+        else meshFilter = gameObject.GetComponent<MeshFilter>();
         meshFilter.mesh = mesh;
 
-        MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        // public º¯¼ö·Î ¼±¾ğµÈ ¸ÓÅÍ¸®¾óÀ» Àû¿ë
+        MeshRenderer meshRenderer;
+        if (gameObject.GetComponent<MeshRenderer>() == null) meshRenderer = gameObject.AddComponent<MeshRenderer>();
+        else meshRenderer = gameObject.GetComponent<MeshRenderer>();
+
+        // public ë³€ìˆ˜ë¡œ ì„ ì–¸ëœ ë¨¸í„°ë¦¬ì–¼ì„ ì ìš©
         if (areaMaterial != null)
         {
             meshRenderer.material = areaMaterial;
         }
         else
         {
-            // ¸¸¾à ¸ÓÅÍ¸®¾óÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò´Ù¸é ±âº» ¸ÓÅÍ¸®¾ó Àû¿ë
+            // ë§Œì•½ ë¨¸í„°ë¦¬ì–¼ì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ë‹¤ë©´ ê¸°ë³¸ ë¨¸í„°ë¦¬ì–¼ ì ìš©
             meshRenderer.material = new Material(Shader.Find("Standard"));
         }
 
-        // MeshCollider ÄÄÆ÷³ÍÆ® Ãß°¡
-        MeshCollider meshCollider = gameObject.AddComponent<MeshCollider>();
+        // MeshCollider ì»´í¬ë„ŒíŠ¸ ì¶”ê°€
+        MeshCollider meshCollider;
+        if (gameObject.GetComponent<MeshCollider>() == null) meshCollider = gameObject.AddComponent<MeshCollider>();
+        else meshCollider = gameObject.GetComponent<MeshCollider>();
+
         meshCollider.sharedMesh = mesh;
         meshCollider.convex = true;
         meshCollider.isTrigger = true;
@@ -527,23 +553,23 @@ public class PolygonManager : MonoBehaviour
 
     public List<GameObject> GetContactedObjects()
     {
-        // MeshColliderÀÇ Bounds¸¦ °¡Á®¿È (´Ù°¢±âµÕÀÇ °æ°è)
+        // MeshColliderì˜ Boundsë¥¼ ê°€ì ¸ì˜´ (ë‹¤ê°ê¸°ë‘¥ì˜ ê²½ê³„)
         MeshCollider meshCollider = GetComponent<MeshCollider>();
         if (meshCollider == null)
         {
-            Debug.LogWarning("MeshCollider°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("MeshColliderê°€ ì—†ìŠµë‹ˆë‹¤.");
             return new List<GameObject>();
         }
 
-        // Bounds¸¦ ±âÁØÀ¸·Î ColliderµéÀ» °Ë»ö
+        // Boundsë¥¼ ê¸°ì¤€ìœ¼ë¡œ Colliderë“¤ì„ ê²€ìƒ‰
         Bounds bounds = meshCollider.bounds;
         Collider[] colliders = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity);
 
-        // Á¢ÃË ÁßÀÎ ¿ÀºêÁ§Æ®µéÀ» ¸®½ºÆ®¿¡ ÀúÀå
+        // ì ‘ì´‰ ì¤‘ì¸ ì˜¤ë¸Œì íŠ¸ë“¤ì„ ë¦¬ìŠ¤íŠ¸ì— ì €ì¥
         List<GameObject> contactObjects = new List<GameObject>();
         foreach (Collider collider in colliders)
         {
-            // ÀÚ±â ÀÚ½ÅÀº Á¦¿Ü
+            // ìê¸° ìì‹ ì€ ì œì™¸
             if (collider.gameObject != gameObject)
             {
                 contactObjects.Add(collider.gameObject);
@@ -556,14 +582,14 @@ public class PolygonManager : MonoBehaviour
 
     public void ConvertEPSG5186ToWGS84(double x, double y, out double latitude, out double longitude)
     {
-        // º¯È¯ÇÒ EPSG:5186 ÁÂÇ¥ (x, y)
+        // ë³€í™˜í•  EPSG:5186 ì¢Œí‘œ (x, y)
         double[] point = new double[] { x, y };
 
         string coordinateConvertString5186 = "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs";
         string coordinateConvertStringWGS = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
         try
-        { 
-            // ÁÂÇ¥ º¯È¯ ¼öÇà
+        {
+            // ì¢Œí‘œ ë³€í™˜ ìˆ˜í–‰
             DotSpatial.Projections.Reproject.ReprojectPoints(
                 point,
                 new double[] { 0 },
@@ -573,7 +599,7 @@ public class PolygonManager : MonoBehaviour
                 1
             );
 
-            // º¯È¯µÈ ÁÂÇ¥ È®ÀÎ
+            // ë³€í™˜ëœ ì¢Œí‘œ í™•ì¸
             //Debug.Log($"Transformed Coordinates: Latitude={point[1]}, Longitude={point[0]}");
 
             latitude = point[1];
@@ -595,11 +621,11 @@ public class PolygonManager : MonoBehaviour
 
     public Vector3 ConvertWGS84ToUnity(double latitude, double longitude, double height = 0)
     {
-        // À§°æµµ ¹× °íµµ¸¦ ECEF ÁÂÇ¥·Î º¯È¯
+        // ìœ„ê²½ë„ ë° ê³ ë„ë¥¼ ECEF ì¢Œí‘œë¡œ ë³€í™˜
         double3 d3;
         LatLonHeightToECEF(latitude, longitude, height, out d3);
 
-        // ECEF ÁÂÇ¥¸¦ Unity ÁÂÇ¥·Î º¯È¯
+        // ECEF ì¢Œí‘œë¥¼ Unity ì¢Œí‘œë¡œ ë³€í™˜
         double3 doublePosition = georeference.TransformEarthCenteredEarthFixedPositionToUnity(d3);
         return new Vector3((float)doublePosition.x, (float)doublePosition.y, (float)doublePosition.z);
     }
@@ -616,22 +642,34 @@ public class PolygonManager : MonoBehaviour
             Vector3 pCurr = polygon[i];
             Vector3 pNext = polygon[(i + 1) % n];
 
-            // ÀÌÀü º¯°ú ´ÙÀ½ º¯ÀÇ º¤ÅÍ¸¦ ±¸ÇÔ (y = 0ÀÌ¹Ç·Î xz Æò¸é¿¡¼­¸¸ °í·Á)
+            // ì´ì „ ë³€ê³¼ ë‹¤ìŒ ë³€ì˜ ë²¡í„°ë¥¼ êµ¬í•¨ (y = 0ì´ë¯€ë¡œ xz í‰ë©´ì—ì„œë§Œ ê³ ë ¤)
             Vector3 edge1 = pCurr - pPrev;
             Vector3 edge2 = pNext - pCurr;
 
-            // °¢ º¤ÅÍ¿¡ ´ëÇØ ³ë¸Ö º¤ÅÍ¸¦ °è»ê (xz Æò¸é¿¡ ¼öÁ÷ÇÏ°Ô)
+            // ê° ë²¡í„°ì— ëŒ€í•´ ë…¸ë©€ ë²¡í„°ë¥¼ ê³„ì‚° (xz í‰ë©´ì— ìˆ˜ì§í•˜ê²Œ)
             Vector3 normal1 = new Vector3(-edge1.z, 0, edge1.x).normalized;
             Vector3 normal2 = new Vector3(-edge2.z, 0, edge2.x).normalized;
 
-            // µÎ ³ë¸Ö º¤ÅÍÀÇ Æò±Õ °è»ê
+            // ë‘ ë…¸ë©€ ë²¡í„°ì˜ í‰ê·  ê³„ì‚°
             Vector3 normalAvg = (normal1 + normal2).normalized;
 
-            // Æò±Õ ³ë¸Ö º¤ÅÍ ¹æÇâÀ¸·Î Á¡À» ÀÌµ¿
+            // í‰ê·  ë…¸ë©€ ë²¡í„° ë°©í–¥ìœ¼ë¡œ ì ì„ ì´ë™
             Vector3 offsetPoint = pCurr + d * normalAvg;
             paddedPolygon.Add(offsetPoint);
         }
 
         return paddedPolygon;
+    }
+
+    public void SetPolygon(List<Vector3> tilePolygonVertices) 
+    {
+        //í´ë¦¬ê³¤ ë°ì´í„° ì´ˆê¸°í™”
+        ResetPolygon();
+
+        //ë§¤ê°œë³€ìˆ˜ë¡œ ë°›ì€ í´ë¦¬ê³¤ ë°ì´í„°ë¥¼ polygonVerticesì— í• ë‹¹
+        polygonVertices = tilePolygonVertices;
+
+        //í´ë¦¬ê³¤ ìƒíƒœë¥¼ Completeë¡œ ë³€ê²½
+        CompletePolygon();
     }
 }

@@ -6,8 +6,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR;
 
-// ¸ğµç ¸é¿¡ ´ëÇÑ clustering & groupingÀ» ÇÏ±â À§ÇØ ÀÛ¼ºÇß´ø ÄÚµå
-// Á¢±Ù ¹æ½ÄÀÌ ¹Ù²î¾î¼­ °´Ã¼È­¿¡ ¾²ÀÌÁø ¾ÊÁö¸¸, ÃßÈÄ ÃÖÀûÈ­ °úÁ¤¿¡ »ç¿ëµÉ ¼ö ÀÖÀ» °Í °°¾Æ ³²°ÜµÒ.
+// ëª¨ë“  ë©´ì— ëŒ€í•œ clustering & groupingì„ í•˜ê¸° ìœ„í•´ ì‘ì„±í–ˆë˜ ì½”ë“œ
+// ì ‘ê·¼ ë°©ì‹ì´ ë°”ë€Œì–´ì„œ ê°ì²´í™”ì— ì“°ì´ì§„ ì•Šì§€ë§Œ, ì¶”í›„ ìµœì í™” ê³¼ì •ì— ì‚¬ìš©ë  ìˆ˜ ìˆì„ ê²ƒ ê°™ì•„ ë‚¨ê²¨ë‘ .
 public class ClusterByTriangleDistance : MonoBehaviour
 {
     public CesiumGeoreference georeference;
@@ -17,8 +17,8 @@ public class ClusterByTriangleDistance : MonoBehaviour
     private int startTriangleIndex;
     private GameObject startGroup;
     public int degree = 15;
-    public float epsilon = 0.1f; // DBSCAN¿¡¼­ »ç¿ëÇÒ °Å¸® ±âÁØ
-    public int minPts = 0; // DBSCAN¿¡¼­ »ç¿ëÇÒ ÃÖ¼Ò Æ÷ÀÎÆ® ¼ö
+    public float epsilon = 0.1f; // DBSCANì—ì„œ ì‚¬ìš©í•  ê±°ë¦¬ ê¸°ì¤€
+    public int minPts = 0; // DBSCANì—ì„œ ì‚¬ìš©í•  ìµœì†Œ í¬ì¸íŠ¸ ìˆ˜
     public float yWeight = 1;
 
     private List<int> clusteredTriangles = new List<int>();
@@ -41,32 +41,32 @@ public class ClusterByTriangleDistance : MonoBehaviour
                 Mesh mesh = targetObject.GetComponent<MeshFilter>().mesh;
                 startTriangleIndex = hit.triangleIndex;
 
-                // upVector¸¦ °è»êÇÑ´Ù.
+                // upVectorë¥¼ ê³„ì‚°í•œë‹¤.
                 //upVector = CalculateUpVectorByECEFConvert(hit.point);
 
                 /*
-                ÀÌÀ¯´Â ¸ğ¸£°ÚÁö¸¸ CesiumGeoreferenceÇÏ tileµé Áö¸éÀÇ normalVector¸¦ ±¸ÇØº¸¸é Ç×»ó (0,-1,0)ÀÌ´Ù.
-                ÀÏ´Ü ¼öµ¿À¸·Î upVector¸¦ ¼öÁ¤ÇÒ ¼ö ÀÖ°Ô²û publicÀ¸·Î ¼±¾ğÇØµÎ¾ú´Ù.
-                CesiumGeoreference ¹ÛÀÇ ¿ÀºêÁ§Æ®µéÀº ÀÏ¹İÀûÀÎ À¯´ÏÆ¼ ¿ÀºêÁ§Æ®Ã³·³ (0,1,0)À» up ¹æÇâÀ¸·Î ÁöÁ¤ÇÏ¸é µÈ´Ù.
+                ì´ìœ ëŠ” ëª¨ë¥´ê² ì§€ë§Œ CesiumGeoreferenceí•˜ tileë“¤ ì§€ë©´ì˜ normalVectorë¥¼ êµ¬í•´ë³´ë©´ í•­ìƒ (0,-1,0)ì´ë‹¤.
+                ì¼ë‹¨ ìˆ˜ë™ìœ¼ë¡œ upVectorë¥¼ ìˆ˜ì •í•  ìˆ˜ ìˆê²Œë” publicìœ¼ë¡œ ì„ ì–¸í•´ë‘ì—ˆë‹¤.
+                CesiumGeoreference ë°–ì˜ ì˜¤ë¸Œì íŠ¸ë“¤ì€ ì¼ë°˜ì ì¸ ìœ ë‹ˆí‹° ì˜¤ë¸Œì íŠ¸ì²˜ëŸ¼ (0,1,0)ì„ up ë°©í–¥ìœ¼ë¡œ ì§€ì •í•˜ë©´ ëœë‹¤.
                 */
 
 
 
-                // ³ë¸Öº¤ÅÍ°¡ upVector¿¡ °¡±î¿î »ï°¢ÇüµéÀ» clustering ÇÑ´Ù. 
-                // clusteredTriangles°¡ °»½ÅµÈ´Ù.
+                // ë…¸ë©€ë²¡í„°ê°€ upVectorì— ê°€ê¹Œìš´ ì‚¼ê°í˜•ë“¤ì„ clustering í•œë‹¤. 
+                // clusteredTrianglesê°€ ê°±ì‹ ëœë‹¤.
                 ExtractUp();
 
 
-                // clusteredTrianglesÀÇ »ï°¢ÇüµéÀ» »ï°¢Çü°£ÀÇ °Å¸®¸¦ ±âÁØÀ¸·Î groupÈ­ÇÑ´Ù.
+                // clusteredTrianglesì˜ ì‚¼ê°í˜•ë“¤ì„ ì‚¼ê°í˜•ê°„ì˜ ê±°ë¦¬ë¥¼ ê¸°ì¤€ìœ¼ë¡œ groupí™”í•œë‹¤.
                 List<List<int>> groups = DBSCAN(clusteredTriangles);
 
 
-                // °¢ ±×·ìÀ» ¿ÀºêÁ§Æ®È­ ÇÏ¿© ½Ã°¢È­. (½ÃÀÛTileÀÇ °æ¿ì startGroupµµ Ã£´Â´Ù.)
+                // ê° ê·¸ë£¹ì„ ì˜¤ë¸Œì íŠ¸í™” í•˜ì—¬ ì‹œê°í™”. (ì‹œì‘Tileì˜ ê²½ìš° startGroupë„ ì°¾ëŠ”ë‹¤.)
                 VisualizeCluster(groups);
 
 
-                // startGroup¿¡¼­ºÎÅÍ Ãæµ¹Ã¼Å©¸¦ ÅëÇØ ´ÙÀ½ ¸ñÇ¥ tileÀ» Ã£¾Æ nextTiles¿¡ ³Ö´Â´Ù.
-                // Ãæµ¹Ã¼Å©ÇÏ¸ç È®ÀåÇØ°¥ ¶§ Áö¸éÀ¸·Î ÆÇ´ÜµÇ´Â ±×·ìÀº Æ÷ÇÔÇÏÁö ¾Ê´Â´Ù.
+                // startGroupì—ì„œë¶€í„° ì¶©ëŒì²´í¬ë¥¼ í†µí•´ ë‹¤ìŒ ëª©í‘œ tileì„ ì°¾ì•„ nextTilesì— ë„£ëŠ”ë‹¤.
+                // ì¶©ëŒì²´í¬í•˜ë©° í™•ì¥í•´ê°ˆ ë•Œ ì§€ë©´ìœ¼ë¡œ íŒë‹¨ë˜ëŠ” ê·¸ë£¹ì€ í¬í•¨í•˜ì§€ ì•ŠëŠ”ë‹¤.
                 ;
                 ;
                 ;
@@ -75,9 +75,9 @@ public class ClusterByTriangleDistance : MonoBehaviour
             }
 
 
-            // targetTiles¿¡ nextTiles¸¦ º¹»ç. nextTiles¸¦ ÃÊ±âÈ­.
-            // targetTilesÀÇ °¢ ¿ø¼Ò¿¡ ´ëÇØ¼­ Â÷·Ê´ë·Î 'Å¬·¯½ºÅÍÈ­->±×·ìÈ­->½Ã°¢È­->´ÙÀ½Å¸ÀÏÃ£±â' ¸¦ ¹İº¹
-            // targetTiles°¡ ºñ¾ú´Ù¸é startGroup¿¡¼­ Ãæµ¹Ã¼Å©¸¦ ÅëÇØ È®ÀåÇØ°¡¸ç ´õÀÌ»ó ¹æ¹®ÇÑÀû ¾ø´Â TileÀ» Ã£À» ¼ö ¾ø´Ù¸é Á¾·á
+            // targetTilesì— nextTilesë¥¼ ë³µì‚¬. nextTilesë¥¼ ì´ˆê¸°í™”.
+            // targetTilesì˜ ê° ì›ì†Œì— ëŒ€í•´ì„œ ì°¨ë¡€ëŒ€ë¡œ 'í´ëŸ¬ìŠ¤í„°í™”->ê·¸ë£¹í™”->ì‹œê°í™”->ë‹¤ìŒíƒ€ì¼ì°¾ê¸°' ë¥¼ ë°˜ë³µ
+            // targetTilesê°€ ë¹„ì—ˆë‹¤ë©´ startGroupì—ì„œ ì¶©ëŒì²´í¬ë¥¼ í†µí•´ í™•ì¥í•´ê°€ë©° ë”ì´ìƒ ë°©ë¬¸í•œì  ì—†ëŠ” Tileì„ ì°¾ì„ ìˆ˜ ì—†ë‹¤ë©´ ì¢…ë£Œ
 
             ;
             ;
@@ -96,7 +96,7 @@ public class ClusterByTriangleDistance : MonoBehaviour
         int[] triangles = mesh.triangles;
         Vector3[] vertices = new Vector3[localVertices.Length];
 
-        // ·ÎÄÃ ÁÂÇ¥¸¦ ¿ùµå ÁÂÇ¥·Î º¯È¯ÇÏ¿© ÀúÀå
+        // ë¡œì»¬ ì¢Œí‘œë¥¼ ì›”ë“œ ì¢Œí‘œë¡œ ë³€í™˜í•˜ì—¬ ì €ì¥
         for (int i = 0; i < localVertices.Length; i++)
         {
             vertices[i] = targetObject.transform.TransformPoint(localVertices[i]);
@@ -144,7 +144,7 @@ public class ClusterByTriangleDistance : MonoBehaviour
             groups.Add(group);
         }
 
-        // Å¬·¯½ºÅÍ¿¡¼­ ½ÇÁ¦ »ï°¢Çü ÀÎµ¦½º·Î º¯È¯
+        // í´ëŸ¬ìŠ¤í„°ì—ì„œ ì‹¤ì œ ì‚¼ê°í˜• ì¸ë±ìŠ¤ë¡œ ë³€í™˜
         for (int i = 0; i < groups.Count; i++)
         {
             for (int j = 0; j < groups[i].Count; j++)
@@ -184,7 +184,7 @@ public class ClusterByTriangleDistance : MonoBehaviour
 
 
 
-    //DBSCAN¾Ë°í¸®Áò¿¡¼­ »ï°¢Çü°£ÀÇ °Å¸®¸¦ ±âÁØÀ¸·Î ÀÌ¿ôÇÔÀ» ÆÇ´ÜÇÏ´Â ÇÔ¼ö
+    //DBSCANì•Œê³ ë¦¬ì¦˜ì—ì„œ ì‚¼ê°í˜•ê°„ì˜ ê±°ë¦¬ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì´ì›ƒí•¨ì„ íŒë‹¨í•˜ëŠ” í•¨ìˆ˜
     List<int> GetNeighbors(List<int> clusteredTriangles, int index)
     {
         List<int> neighbors = new List<int>();
@@ -192,7 +192,7 @@ public class ClusterByTriangleDistance : MonoBehaviour
         int[] triangles = mesh.triangles;
         Vector3[] vertices = mesh.vertices;
 
-        // ÇöÀç »ï°¢ÇüÀÇ Á¤Á¡ ÁÂÇ¥
+        // í˜„ì¬ ì‚¼ê°í˜•ì˜ ì •ì  ì¢Œí‘œ
         Vector3[] indexTriangleVertices = new Vector3[3];
         int triangleIndex = clusteredTriangles[index];
         indexTriangleVertices[0] = vertices[triangles[triangleIndex * 3]];
@@ -209,14 +209,14 @@ public class ClusterByTriangleDistance : MonoBehaviour
             currentTriangleVertices[1] = vertices[triangles[currentTriangleIndex * 3 + 1]];
             currentTriangleVertices[2] = vertices[triangles[currentTriangleIndex * 3 + 2]];
 
-            // µÎ »ï°¢Çü°£ÀÇ °Å¸®°¡ epsilonº¸´Ù ÀÛ´Ù¸é ÀÌ¿ôÇÏ´Ù°í ÆÇ´Ü
+            // ë‘ ì‚¼ê°í˜•ê°„ì˜ ê±°ë¦¬ê°€ epsilonë³´ë‹¤ ì‘ë‹¤ë©´ ì´ì›ƒí•˜ë‹¤ê³  íŒë‹¨
             float distance = TriangleDistance(indexTriangleVertices, currentTriangleVertices);
             if (distance <= epsilon)
             {
                 neighbors.Add(i);
             }
         }
-        
+
         return neighbors;
     }
 
@@ -234,25 +234,25 @@ public class ClusterByTriangleDistance : MonoBehaviour
 
             List<Vector3> vertices = new List<Vector3>();
             List<int> newTriangles = new List<int>();
-            List<Vector2> uvs = new List<Vector2>(); // UV ÁÂÇ¥¸¦ ÀúÀåÇÒ ¸®½ºÆ®
+            List<Vector2> uvs = new List<Vector2>(); // UV ì¢Œí‘œë¥¼ ì €ì¥í•  ë¦¬ìŠ¤íŠ¸
             Dictionary<int, int> vertexMap = new Dictionary<int, int>();
 
             Mesh mesh = targetObject.GetComponent<MeshFilter>().mesh;
             Vector3[] originalVertices = mesh.vertices;
             for (int i = 0; i < originalVertices.Length; i++)
             {
-                // °¢ Á¤Á¡À» ¿ùµå ÁÂÇ¥°è·Î º¯È¯
+                // ê° ì •ì ì„ ì›”ë“œ ì¢Œí‘œê³„ë¡œ ë³€í™˜
                 originalVertices[i] = targetObject.transform.TransformPoint(originalVertices[i]);
             }
 
             int[] originalTriangles = mesh.triangles;
-            Vector2[] originalUVs = mesh.uv; // targetObjectÀÇ UV ÁÂÇ¥
+            Vector2[] originalUVs = mesh.uv; // targetObjectì˜ UV ì¢Œí‘œ
 
             GameObject newObj = new GameObject("Cluster");
 
             foreach (int triangleIndex in group)
             {
-                if (startGroup == null && triangleIndex == startTriangleIndex) //½ÃÀÛ surface¸¦ Ã£´Â °úÁ¤
+                if (startGroup == null && triangleIndex == startTriangleIndex) //ì‹œì‘ surfaceë¥¼ ì°¾ëŠ” ê³¼ì •
                 {
                     startGroup = newObj;
                     startGroup.name = "Start";
@@ -265,8 +265,8 @@ public class ClusterByTriangleDistance : MonoBehaviour
                     if (!vertexMap.ContainsKey(originalIndex))
                     {
                         vertexMap[originalIndex] = vertices.Count;
-                        vertices.Add(originalVertices[originalIndex]); // ·ÎÄÃ ÁÂÇ¥ »ç¿ë
-                        uvs.Add(originalUVs[originalIndex]); // ÇØ´ç Á¤Á¡ÀÇ UV ÁÂÇ¥¸¦ Ãß°¡
+                        vertices.Add(originalVertices[originalIndex]); // ë¡œì»¬ ì¢Œí‘œ ì‚¬ìš©
+                        uvs.Add(originalUVs[originalIndex]); // í•´ë‹¹ ì •ì ì˜ UV ì¢Œí‘œë¥¼ ì¶”ê°€
                     }
                     newTriangles.Add(vertexMap[originalIndex]);
                 }
@@ -278,16 +278,16 @@ public class ClusterByTriangleDistance : MonoBehaviour
             Mesh newMesh = new Mesh();
             newMesh.vertices = vertices.ToArray();
             newMesh.triangles = newTriangles.ToArray();
-            newMesh.uv = uvs.ToArray(); // »õ ¸Ş½¬¿¡ UV ¸ÅÇÎ Àû¿ë
+            newMesh.uv = uvs.ToArray(); // ìƒˆ ë©”ì‰¬ì— UV ë§¤í•‘ ì ìš©
             newMesh.RecalculateNormals();
 
             newObj.GetComponent<MeshFilter>().mesh = newMesh;
-            newObj.GetComponent<MeshRenderer>().material = targetObject.GetComponent<MeshRenderer>().material; // ±âÁ¸ ¸ÓÅÍ¸®¾óÀ» »ç¿ë
+            newObj.GetComponent<MeshRenderer>().material = targetObject.GetComponent<MeshRenderer>().material; // ê¸°ì¡´ ë¨¸í„°ë¦¬ì–¼ì„ ì‚¬ìš©
             newObj.transform.SetParent(this.transform);
 
             groupObjects[k] = newObj;
 
-            // Á¤Á¡ÀÇ ³ôÀÌ°ª Æò±Õ °è»ê
+            // ì •ì ì˜ ë†’ì´ê°’ í‰ê·  ê³„ì‚°
             float heightAverage = 0;
             for (int i = 0; i < vertices.Count; i++)
             {
@@ -296,7 +296,7 @@ public class ClusterByTriangleDistance : MonoBehaviour
             heightAverage = heightAverage / vertices.Count;
             groupHeightAverages[k] = heightAverage;
 
-            // Á¤Á¡ÀÇ ³ôÀÌ°ª Æò±ÕÀÇ ÃÖ´ë ÃÖ¼Ò °»½Å
+            // ì •ì ì˜ ë†’ì´ê°’ í‰ê· ì˜ ìµœëŒ€ ìµœì†Œ ê°±ì‹ 
             if (heightAverage < minHeightAverage)
             {
                 minHeightAverage = heightAverage;
@@ -307,25 +307,25 @@ public class ClusterByTriangleDistance : MonoBehaviour
             }
         }
 
-        // Áö¸é°ú ÃµÀåÀ» ±¸ºĞÇÒ ³ôÀÌ°ªÀ» Ã¥Á¤. (¾Æ·¡´Â ÃÖ´ë~ÃÖ¼Ò¸¦ 9:1·Î ³»ºĞÇÏ´Â °ªÀ» ±âÁØÀ¸·Î ÇÔ.)
+        // ì§€ë©´ê³¼ ì²œì¥ì„ êµ¬ë¶„í•  ë†’ì´ê°’ì„ ì±…ì •. (ì•„ë˜ëŠ” ìµœëŒ€~ìµœì†Œë¥¼ 9:1ë¡œ ë‚´ë¶„í•˜ëŠ” ê°’ì„ ê¸°ì¤€ìœ¼ë¡œ í•¨.)
         float heightThreshold = 0.1f * maxHeightAverage + 0.9f * minHeightAverage;
 
         for (int k = 0; k < groups.Count; k++)
         {
-            //³ôÀÌ Æò±ÕÀÌ ±âÁØ°ª ¹Ì¸¸ÀÎ ±×·ì¿¡ ´ëÇØ¼­
-            if (groupHeightAverages[k] < heightThreshold) 
+            //ë†’ì´ í‰ê· ì´ ê¸°ì¤€ê°’ ë¯¸ë§Œì¸ ê·¸ë£¹ì— ëŒ€í•´ì„œ
+            if (groupHeightAverages[k] < heightThreshold)
             {
-                //ÀÌ¸§À» Ground·Î °»½ÅÇÑ´Ù. 
+                //ì´ë¦„ì„ Groundë¡œ ê°±ì‹ í•œë‹¤. 
                 groupObjects[k].name = "Ground";
                 groupObjects[k].SetActive(false);
             }
 
         }
     }
-    // °¢ ±×·ì¸¶´Ù ¿ÀºêÁ§Æ®¸¦ »ı¼ºÇÏ¿© °¡½ÃÈ­ ÇÏ´Â ¹æ½Ä
+    // ê° ê·¸ë£¹ë§ˆë‹¤ ì˜¤ë¸Œì íŠ¸ë¥¼ ìƒì„±í•˜ì—¬ ê°€ì‹œí™” í•˜ëŠ” ë°©ì‹
 
 
-    // °¢ ±×·ì¿¡ ´ëÇÑ Á¤º¸¸¸ ´ã°íÀÖ°í, ¿øº»¿¡¼­ ground »ï°¢Çü¸¸ Á¦°ÅÇÏ´Â ¹æ½Ä
+    // ê° ê·¸ë£¹ì— ëŒ€í•œ ì •ë³´ë§Œ ë‹´ê³ ìˆê³ , ì›ë³¸ì—ì„œ ground ì‚¼ê°í˜•ë§Œ ì œê±°í•˜ëŠ” ë°©ì‹
     void VisualizeCluster(List<List<int>> groups)
     {
         float[] groupHeightAverages = new float[groups.Count];
@@ -346,7 +346,7 @@ public class ClusterByTriangleDistance : MonoBehaviour
 
             HashSet<int> vertexIndices_Hash = new HashSet<int>();
 
-            for (int i = 0; i < group.Count; i++) 
+            for (int i = 0; i < group.Count; i++)
             {
                 int triangleIndex = group[i];
 
@@ -357,7 +357,7 @@ public class ClusterByTriangleDistance : MonoBehaviour
 
             List<int> vertexIndices = new List<int>(vertexIndices_Hash);
 
-            // Á¤Á¡ÀÇ ³ôÀÌ°ª Æò±Õ °è»ê
+            // ì •ì ì˜ ë†’ì´ê°’ í‰ê·  ê³„ì‚°
             float heightAverage = 0;
             for (int i = 0; i < vertexIndices_Hash.Count; i++)
             {
@@ -366,7 +366,7 @@ public class ClusterByTriangleDistance : MonoBehaviour
             heightAverage = heightAverage / vertexIndices.Count;
             groupHeightAverages[k] = heightAverage;
 
-            // Á¤Á¡ÀÇ ³ôÀÌ°ª Æò±ÕÀÇ ÃÖ´ë ÃÖ¼Ò °»½Å
+            // ì •ì ì˜ ë†’ì´ê°’ í‰ê· ì˜ ìµœëŒ€ ìµœì†Œ ê°±ì‹ 
             if (heightAverage < minHeightAverage)
             {
                 minHeightAverage = heightAverage;
@@ -378,11 +378,11 @@ public class ClusterByTriangleDistance : MonoBehaviour
         }
 
 
-        // Áö¸é°ú ÃµÀåÀ» ±¸ºĞÇÒ ³ôÀÌ°ªÀ» Ã¥Á¤. (¾Æ·¡´Â ÃÖ´ë~ÃÖ¼Ò¸¦ 9:1·Î ³»ºĞÇÏ´Â °ªÀ» ±âÁØÀ¸·Î ÇÔ.)
+        // ì§€ë©´ê³¼ ì²œì¥ì„ êµ¬ë¶„í•  ë†’ì´ê°’ì„ ì±…ì •. (ì•„ë˜ëŠ” ìµœëŒ€~ìµœì†Œë¥¼ 9:1ë¡œ ë‚´ë¶„í•˜ëŠ” ê°’ì„ ê¸°ì¤€ìœ¼ë¡œ í•¨.)
         float heightThreshold = 0.1f * maxHeightAverage + 0.9f * minHeightAverage;
 
 
-        // ³ôÀÌ Æò±ÕÀÌ ±âÁØ°ª ¹Ì¸¸ÀÎ ±×·ì¿¡ ´ëÇØ¼­ ±×·ì¿¡ Æ÷ÇÔµÇ´Â »ï°¢ÇüµéÀ» ¿øº» ¿ÀºêÁ§Æ®¿¡¼­ Á¦°Å
+        // ë†’ì´ í‰ê· ì´ ê¸°ì¤€ê°’ ë¯¸ë§Œì¸ ê·¸ë£¹ì— ëŒ€í•´ì„œ ê·¸ë£¹ì— í¬í•¨ë˜ëŠ” ì‚¼ê°í˜•ë“¤ì„ ì›ë³¸ ì˜¤ë¸Œì íŠ¸ì—ì„œ ì œê±°
         List<int> trianglesToRemove = new List<int>();
         for (int k = 0; k < groups.Count; k++)
         {
@@ -395,10 +395,10 @@ public class ClusterByTriangleDistance : MonoBehaviour
 
     public float CalculateHeight(Vector3 point, Vector3 upVector)
     {
-        // upVector¸¦ ´ÜÀ§ º¤ÅÍ·Î Á¤±ÔÈ­ÇÕ´Ï´Ù.
+        // upVectorë¥¼ ë‹¨ìœ„ ë²¡í„°ë¡œ ì •ê·œí™”í•©ë‹ˆë‹¤.
         Vector3 normalizedUpVector = upVector.normalized;
 
-        // Á¡ÀÇ ÁÂÇ¥¿Í upVector¸¦ ³»ÀûÇÏ¿© ³ôÀÌ¸¦ °è»êÇÕ´Ï´Ù.
+        // ì ì˜ ì¢Œí‘œì™€ upVectorë¥¼ ë‚´ì í•˜ì—¬ ë†’ì´ë¥¼ ê³„ì‚°í•©ë‹ˆë‹¤.
         float height = Vector3.Dot(point, normalizedUpVector);
 
         return height;
@@ -409,25 +409,25 @@ public class ClusterByTriangleDistance : MonoBehaviour
     {
         Mesh mesh = obj.GetComponent<MeshFilter>().mesh;
 
-        // ÇöÀç »ï°¢Çü ÀÎµ¦½º ¹è¿­À» °¡Á®¿É´Ï´Ù.
+        // í˜„ì¬ ì‚¼ê°í˜• ì¸ë±ìŠ¤ ë°°ì—´ì„ ê°€ì ¸ì˜µë‹ˆë‹¤.
         List<int> triangles = new List<int>(mesh.triangles);
 
-        // ÀÎµ¦½º°¡ Á¤·ÄµÇ¾î ÀÖÁö ¾ÊÀ¸¸é ¿À·ù°¡ ¹ß»ıÇÒ ¼ö ÀÖÀ¸¹Ç·Î, ¿ª¼øÀ¸·Î Á¤·ÄÇÕ´Ï´Ù.
+        // ì¸ë±ìŠ¤ê°€ ì •ë ¬ë˜ì–´ ìˆì§€ ì•Šìœ¼ë©´ ì˜¤ë¥˜ê°€ ë°œìƒí•  ìˆ˜ ìˆìœ¼ë¯€ë¡œ, ì—­ìˆœìœ¼ë¡œ ì •ë ¬í•©ë‹ˆë‹¤.
         group.Sort((a, b) => b.CompareTo(a));
 
-        // »ï°¢Çü ÀÎµ¦½º¿¡¼­ group¿¡ Æ÷ÇÔµÈ ÀÎµ¦½º¸¦ Á¦°ÅÇÕ´Ï´Ù.
+        // ì‚¼ê°í˜• ì¸ë±ìŠ¤ì—ì„œ groupì— í¬í•¨ëœ ì¸ë±ìŠ¤ë¥¼ ì œê±°í•©ë‹ˆë‹¤.
         foreach (int index in group)
         {
-            // »ï°¢Çü ÇÏ³ª´ç 3°³ÀÇ ÀÎµ¦½º°¡ ÀÖÀ¸¹Ç·Î, 3°³ÀÇ ÀÎµ¦½º¸¦ Á¦°ÅÇÕ´Ï´Ù.
+            // ì‚¼ê°í˜• í•˜ë‚˜ë‹¹ 3ê°œì˜ ì¸ë±ìŠ¤ê°€ ìˆìœ¼ë¯€ë¡œ, 3ê°œì˜ ì¸ë±ìŠ¤ë¥¼ ì œê±°í•©ë‹ˆë‹¤.
             triangles.RemoveAt(index * 3);
             triangles.RemoveAt(index * 3);
             triangles.RemoveAt(index * 3);
         }
 
-        // Á¦°ÅµÈ »ï°¢Çü ÀÎµ¦½º·Î Mesh¸¦ ´Ù½Ã ¼³Á¤ÇÕ´Ï´Ù.
+        // ì œê±°ëœ ì‚¼ê°í˜• ì¸ë±ìŠ¤ë¡œ Meshë¥¼ ë‹¤ì‹œ ì„¤ì •í•©ë‹ˆë‹¤.
         mesh.triangles = triangles.ToArray();
 
-        // Mesh¸¦ ¾÷µ¥ÀÌÆ®ÇÏ¿© º¯°æ»çÇ×À» Àû¿ëÇÕ´Ï´Ù.
+        // Meshë¥¼ ì—…ë°ì´íŠ¸í•˜ì—¬ ë³€ê²½ì‚¬í•­ì„ ì ìš©í•©ë‹ˆë‹¤.
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
     }
@@ -447,17 +447,17 @@ public class ClusterByTriangleDistance : MonoBehaviour
     {
         float minDistance = float.MaxValue;
 
-        // Tri1ÀÇ º¯
+        // Tri1ì˜ ë³€
         Vector3[] edges1 = { tri1[1] - tri1[0], tri1[2] - tri1[1], tri1[0] - tri1[2] };
 
-        // Tri2ÀÇ º¯
+        // Tri2ì˜ ë³€
         Vector3[] edges2 = { tri2[1] - tri2[0], tri2[2] - tri2[1], tri2[0] - tri2[2] };
 
-        // °¢ º¯ÀÇ ³¡Á¡
+        // ê° ë³€ì˜ ëì 
         Vector3[] tri1Points = { tri1[0], tri1[1], tri1[2] };
         Vector3[] tri2Points = { tri2[0], tri2[1], tri2[2] };
 
-        // ¸ğµç º¯ Á¶ÇÕ °£ ÃÖ´Ü °Å¸® °è»ê
+        // ëª¨ë“  ë³€ ì¡°í•© ê°„ ìµœë‹¨ ê±°ë¦¬ ê³„ì‚°
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
@@ -496,11 +496,11 @@ public class ClusterByTriangleDistance : MonoBehaviour
         return Vector3.Distance(closestPoint1, closestPoint2);
     }
 
-    private Vector3 CalculateUpVectorByECEFConvert(Vector3 hitPoint) 
+    private Vector3 CalculateUpVectorByECEFConvert(Vector3 hitPoint)
     {
         double3 worldPosition_d3 = new double3(hitPoint.x, hitPoint.y, hitPoint.z);
 
-        // ¿ùµå ÁÂÇ¥¸¦ ECEF ÁÂÇ¥·Î º¯È¯
+        // ì›”ë“œ ì¢Œí‘œë¥¼ ECEF ì¢Œí‘œë¡œ ë³€í™˜
         double3 ecefPosition = georeference.TransformUnityPositionToEarthCenteredEarthFixed(worldPosition_d3);
 
         double3 upVector_d3 = new double3(-ecefPosition.x, ecefPosition.z, -ecefPosition.y);

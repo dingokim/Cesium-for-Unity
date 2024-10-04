@@ -14,8 +14,8 @@ public class GroundRemover : MonoBehaviour
     public Vector3 upVector = Vector3.up;
 
     public int degree = 20;
-    public float epsilon = 0.1f; // DBSCAN¿¡¼­ »ç¿ëÇÒ °Å¸® ±âÁØ
-    public int minPts = 0; // DBSCAN¿¡¼­ »ç¿ëÇÒ ÃÖ¼Ò Æ÷ÀÎÆ® ¼ö
+    public float epsilon = 0.1f; // DBSCANì—ì„œ ì‚¬ìš©í•  ê±°ë¦¬ ê¸°ì¤€
+    public int minPts = 0; // DBSCANì—ì„œ ì‚¬ìš©í•  ìµœì†Œ í¬ì¸íŠ¸ ìˆ˜
     public float yWeight = 1;
 
     private List<int> clusteredTriangles = new List<int>();
@@ -26,7 +26,7 @@ public class GroundRemover : MonoBehaviour
     private List<GameObject> totalGameObject = new List<GameObject>();
 
 
-    public void RemoveChildGround() 
+    public void RemoveChildGround()
     {
         Debug.Log($"RemoveChildGround Called... child : {transform.GetChild(0).gameObject.name}");
         RemoveGround(transform.GetChild(0).gameObject);
@@ -39,28 +39,28 @@ public class GroundRemover : MonoBehaviour
         Mesh mesh = targetObject.GetComponent<MeshFilter>().mesh;
 
 
-        // upVector¸¦ °è»êÇÑ´Ù.
+        // upVectorë¥¼ ê³„ì‚°í•œë‹¤.
         //upVector = CalculateUpVectorByECEFConvert(hit.point);
         /*
-        ÀÌÀ¯´Â ¸ğ¸£°ÚÁö¸¸ CesiumGeoreferenceÇÏ tileµé Áö¸éÀÇ normalVector¸¦ ±¸ÇØº¸¸é Ç×»ó (0,-1,0)ÀÌ´Ù.
-        ÀÏ´Ü ¼öµ¿À¸·Î upVector¸¦ ¼öÁ¤ÇÒ ¼ö ÀÖ°Ô²û publicÀ¸·Î ¼±¾ğÇØµÎ¾ú´Ù.
-        CesiumGeoreference ¹ÛÀÇ ¿ÀºêÁ§Æ®µéÀº ÀÏ¹İÀûÀÎ À¯´ÏÆ¼ ¿ÀºêÁ§Æ®Ã³·³ (0,1,0)À» up ¹æÇâÀ¸·Î ÁöÁ¤ÇÏ¸é µÈ´Ù.
+        ì´ìœ ëŠ” ëª¨ë¥´ê² ì§€ë§Œ CesiumGeoreferenceí•˜ tileë“¤ ì§€ë©´ì˜ normalVectorë¥¼ êµ¬í•´ë³´ë©´ í•­ìƒ (0,-1,0)ì´ë‹¤.
+        ì¼ë‹¨ ìˆ˜ë™ìœ¼ë¡œ upVectorë¥¼ ìˆ˜ì •í•  ìˆ˜ ìˆê²Œë” publicìœ¼ë¡œ ì„ ì–¸í•´ë‘ì—ˆë‹¤.
+        CesiumGeoreference ë°–ì˜ ì˜¤ë¸Œì íŠ¸ë“¤ì€ ì¼ë°˜ì ì¸ ìœ ë‹ˆí‹° ì˜¤ë¸Œì íŠ¸ì²˜ëŸ¼ (0,1,0)ì„ up ë°©í–¥ìœ¼ë¡œ ì§€ì •í•˜ë©´ ëœë‹¤.
         */
 
 
-        // ³ë¸Öº¤ÅÍ°¡ upVector¿¡ °¡±î¿î »ï°¢ÇüµéÀ» clustering ÇÑ´Ù. ( clusteredTriangles°¡ °»½ÅµÈ´Ù.)
+        // ë…¸ë©€ë²¡í„°ê°€ upVectorì— ê°€ê¹Œìš´ ì‚¼ê°í˜•ë“¤ì„ clustering í•œë‹¤. ( clusteredTrianglesê°€ ê°±ì‹ ëœë‹¤.)
         ExtractUp();
 
 
-        // clusteredTrianglesÀÇ »ï°¢ÇüµéÀ» »ï°¢Çü°£ÀÇ °Å¸®¸¦ ±âÁØÀ¸·Î groupÈ­ÇÑ´Ù.
+        // clusteredTrianglesì˜ ì‚¼ê°í˜•ë“¤ì„ ì‚¼ê°í˜•ê°„ì˜ ê±°ë¦¬ë¥¼ ê¸°ì¤€ìœ¼ë¡œ groupí™”í•œë‹¤.
         List<List<int>> groups = DBSCAN(clusteredTriangles);
 
 
-        // Áö¸éÀ¸·Î ¿¹»óµÇ´Â ±×·ìÀ» Ã£°í, ±× ±×·ìÀÇ »ï°¢ÇüµéÀ» ¿øº» mesh¿¡¼­ Á¦°ÅÇÑ´Ù.
+        // ì§€ë©´ìœ¼ë¡œ ì˜ˆìƒë˜ëŠ” ê·¸ë£¹ì„ ì°¾ê³ , ê·¸ ê·¸ë£¹ì˜ ì‚¼ê°í˜•ë“¤ì„ ì›ë³¸ meshì—ì„œ ì œê±°í•œë‹¤.
         FindGroundAndRemove(groups);
 
 
-        // collider¸¦ °»½Å
+        // colliderë¥¼ ê°±ì‹ 
         MeshCollider meshCollider = targetObject.GetComponent<MeshCollider>();
         meshCollider.sharedMesh = null;
         meshCollider.sharedMesh = targetObject.GetComponent<MeshFilter>().mesh;
@@ -76,7 +76,7 @@ public class GroundRemover : MonoBehaviour
         int[] triangles = mesh.triangles;
         Vector3[] vertices = new Vector3[localVertices.Length];
 
-        // ·ÎÄÃ ÁÂÇ¥¸¦ ¿ùµå ÁÂÇ¥·Î º¯È¯ÇÏ¿© ÀúÀå
+        // ë¡œì»¬ ì¢Œí‘œë¥¼ ì›”ë“œ ì¢Œí‘œë¡œ ë³€í™˜í•˜ì—¬ ì €ì¥
         for (int i = 0; i < localVertices.Length; i++)
         {
             vertices[i] = targetObject.transform.TransformPoint(localVertices[i]);
@@ -124,7 +124,7 @@ public class GroundRemover : MonoBehaviour
             groups.Add(group);
         }
 
-        // Å¬·¯½ºÅÍ¿¡¼­ ½ÇÁ¦ »ï°¢Çü ÀÎµ¦½º·Î º¯È¯
+        // í´ëŸ¬ìŠ¤í„°ì—ì„œ ì‹¤ì œ ì‚¼ê°í˜• ì¸ë±ìŠ¤ë¡œ ë³€í™˜
         for (int i = 0; i < groups.Count; i++)
         {
             for (int j = 0; j < groups[i].Count; j++)
@@ -164,7 +164,7 @@ public class GroundRemover : MonoBehaviour
 
 
 
-    //DBSCAN¾Ë°í¸®Áò¿¡¼­ »ï°¢Çü°£ÀÇ °Å¸®¸¦ ±âÁØÀ¸·Î ÀÌ¿ôÇÔÀ» ÆÇ´ÜÇÏ´Â ÇÔ¼ö
+    //DBSCANì•Œê³ ë¦¬ì¦˜ì—ì„œ ì‚¼ê°í˜•ê°„ì˜ ê±°ë¦¬ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì´ì›ƒí•¨ì„ íŒë‹¨í•˜ëŠ” í•¨ìˆ˜
     List<int> GetNeighbors(List<int> clusteredTriangles, int index)
     {
         List<int> neighbors = new List<int>();
@@ -173,7 +173,7 @@ public class GroundRemover : MonoBehaviour
         Vector3[] vertices = mesh.vertices;
         int indexInCluster = clusteredTriangles[index];
 
-        // ÇöÀç »ï°¢ÇüÀÇ Á¤Á¡ ÁÂÇ¥
+        // í˜„ì¬ ì‚¼ê°í˜•ì˜ ì •ì  ì¢Œí‘œ
         Vector3[] indexTriangleVertices = new Vector3[3];
         int triangleIndex = clusteredTriangles[index];
         indexTriangleVertices[0] = vertices[triangles[triangleIndex * 3]];
@@ -190,18 +190,18 @@ public class GroundRemover : MonoBehaviour
             currentTriangleVertices[1] = vertices[triangles[currentTriangleIndex * 3 + 1]];
             currentTriangleVertices[2] = vertices[triangles[currentTriangleIndex * 3 + 2]];
 
-            if (IsTriangleConnected(vertices, triangles, currentTriangleIndex, indexInCluster)) 
+            if (IsTriangleConnected(vertices, triangles, currentTriangleIndex, indexInCluster))
             {
                 neighbors.Add(i);
             }
         }
-        
+
         return neighbors;
     }
 
 
 
-    // ¿øº»¿¡¼­ ground »ï°¢Çü¸¸ Á¦°ÅÇÏ¿© mesh¸¦ °»½Å
+    // ì›ë³¸ì—ì„œ ground ì‚¼ê°í˜•ë§Œ ì œê±°í•˜ì—¬ meshë¥¼ ê°±ì‹ 
     void FindGroundAndRemove(List<List<int>> groups)
     {
         float[] groupHeightAverages = new float[groups.Count];
@@ -222,7 +222,7 @@ public class GroundRemover : MonoBehaviour
 
             HashSet<int> vertexIndices_Hash = new HashSet<int>();
 
-            for (int i = 0; i < group.Count; i++) 
+            for (int i = 0; i < group.Count; i++)
             {
                 int triangleIndex = group[i];
 
@@ -233,7 +233,7 @@ public class GroundRemover : MonoBehaviour
 
             List<int> vertexIndices = new List<int>(vertexIndices_Hash);
 
-            // Á¤Á¡ÀÇ ³ôÀÌ°ª Æò±Õ °è»ê
+            // ì •ì ì˜ ë†’ì´ê°’ í‰ê·  ê³„ì‚°
             float heightAverage = 0;
             for (int i = 0; i < vertexIndices_Hash.Count; i++)
             {
@@ -242,7 +242,7 @@ public class GroundRemover : MonoBehaviour
             heightAverage = heightAverage / vertexIndices.Count;
             groupHeightAverages[k] = heightAverage;
 
-            // Á¤Á¡ÀÇ ³ôÀÌ°ª Æò±ÕÀÇ ÃÖ´ë ÃÖ¼Ò °»½Å
+            // ì •ì ì˜ ë†’ì´ê°’ í‰ê· ì˜ ìµœëŒ€ ìµœì†Œ ê°±ì‹ 
             if (heightAverage < minHeightAverage)
             {
                 minHeightAverage = heightAverage;
@@ -254,11 +254,11 @@ public class GroundRemover : MonoBehaviour
         }
 
 
-        // Áö¸é°ú ÃµÀåÀ» ±¸ºĞÇÒ ³ôÀÌ°ªÀ» Ã¥Á¤. (¾Æ·¡´Â ÃÖ´ë~ÃÖ¼Ò¸¦ 9:1·Î ³»ºĞÇÏ´Â °ªÀ» ±âÁØÀ¸·Î ÇÔ.)
+        // ì§€ë©´ê³¼ ì²œì¥ì„ êµ¬ë¶„í•  ë†’ì´ê°’ì„ ì±…ì •. (ì•„ë˜ëŠ” ìµœëŒ€~ìµœì†Œë¥¼ 9:1ë¡œ ë‚´ë¶„í•˜ëŠ” ê°’ì„ ê¸°ì¤€ìœ¼ë¡œ í•¨.)
         float heightThreshold = 0.1f * maxHeightAverage + 0.9f * minHeightAverage;
 
 
-        // ³ôÀÌ Æò±ÕÀÌ ±âÁØ°ª ¹Ì¸¸ÀÎ ±×·ì¿¡ ´ëÇØ¼­ ±×·ì¿¡ Æ÷ÇÔµÇ´Â »ï°¢ÇüµéÀ» ¿øº» ¿ÀºêÁ§Æ®¿¡¼­ Á¦°Å
+        // ë†’ì´ í‰ê· ì´ ê¸°ì¤€ê°’ ë¯¸ë§Œì¸ ê·¸ë£¹ì— ëŒ€í•´ì„œ ê·¸ë£¹ì— í¬í•¨ë˜ëŠ” ì‚¼ê°í˜•ë“¤ì„ ì›ë³¸ ì˜¤ë¸Œì íŠ¸ì—ì„œ ì œê±°
         List<int> trianglesToRemove = new List<int>();
         for (int k = 0; k < groups.Count; k++)
         {
@@ -271,10 +271,10 @@ public class GroundRemover : MonoBehaviour
 
     public float CalculateHeight(Vector3 point, Vector3 upVector)
     {
-        // upVector¸¦ ´ÜÀ§ º¤ÅÍ·Î Á¤±ÔÈ­ÇÕ´Ï´Ù.
+        // upVectorë¥¼ ë‹¨ìœ„ ë²¡í„°ë¡œ ì •ê·œí™”í•©ë‹ˆë‹¤.
         Vector3 normalizedUpVector = upVector.normalized;
 
-        // Á¡ÀÇ ÁÂÇ¥¿Í upVector¸¦ ³»ÀûÇÏ¿© ³ôÀÌ¸¦ °è»êÇÕ´Ï´Ù.
+        // ì ì˜ ì¢Œí‘œì™€ upVectorë¥¼ ë‚´ì í•˜ì—¬ ë†’ì´ë¥¼ ê³„ì‚°í•©ë‹ˆë‹¤.
         float height = Vector3.Dot(point, normalizedUpVector);
 
         return height;
@@ -285,25 +285,25 @@ public class GroundRemover : MonoBehaviour
     {
         Mesh mesh = obj.GetComponent<MeshFilter>().mesh;
 
-        // ÇöÀç »ï°¢Çü ÀÎµ¦½º ¹è¿­À» °¡Á®¿É´Ï´Ù.
+        // í˜„ì¬ ì‚¼ê°í˜• ì¸ë±ìŠ¤ ë°°ì—´ì„ ê°€ì ¸ì˜µë‹ˆë‹¤.
         List<int> triangles = new List<int>(mesh.triangles);
 
-        // ÀÎµ¦½º°¡ Á¤·ÄµÇ¾î ÀÖÁö ¾ÊÀ¸¸é ¿À·ù°¡ ¹ß»ıÇÒ ¼ö ÀÖÀ¸¹Ç·Î, ¿ª¼øÀ¸·Î Á¤·ÄÇÕ´Ï´Ù.
+        // ì¸ë±ìŠ¤ê°€ ì •ë ¬ë˜ì–´ ìˆì§€ ì•Šìœ¼ë©´ ì˜¤ë¥˜ê°€ ë°œìƒí•  ìˆ˜ ìˆìœ¼ë¯€ë¡œ, ì—­ìˆœìœ¼ë¡œ ì •ë ¬í•©ë‹ˆë‹¤.
         group.Sort((a, b) => b.CompareTo(a));
 
-        // »ï°¢Çü ÀÎµ¦½º¿¡¼­ group¿¡ Æ÷ÇÔµÈ ÀÎµ¦½º¸¦ Á¦°ÅÇÕ´Ï´Ù.
+        // ì‚¼ê°í˜• ì¸ë±ìŠ¤ì—ì„œ groupì— í¬í•¨ëœ ì¸ë±ìŠ¤ë¥¼ ì œê±°í•©ë‹ˆë‹¤.
         foreach (int index in group)
         {
-            // »ï°¢Çü ÇÏ³ª´ç 3°³ÀÇ ÀÎµ¦½º°¡ ÀÖÀ¸¹Ç·Î, 3°³ÀÇ ÀÎµ¦½º¸¦ Á¦°ÅÇÕ´Ï´Ù.
+            // ì‚¼ê°í˜• í•˜ë‚˜ë‹¹ 3ê°œì˜ ì¸ë±ìŠ¤ê°€ ìˆìœ¼ë¯€ë¡œ, 3ê°œì˜ ì¸ë±ìŠ¤ë¥¼ ì œê±°í•©ë‹ˆë‹¤.
             triangles.RemoveAt(index * 3);
             triangles.RemoveAt(index * 3);
             triangles.RemoveAt(index * 3);
         }
 
-        // Á¦°ÅµÈ »ï°¢Çü ÀÎµ¦½º·Î Mesh¸¦ ´Ù½Ã ¼³Á¤ÇÕ´Ï´Ù.
+        // ì œê±°ëœ ì‚¼ê°í˜• ì¸ë±ìŠ¤ë¡œ Meshë¥¼ ë‹¤ì‹œ ì„¤ì •í•©ë‹ˆë‹¤.
         mesh.triangles = triangles.ToArray();
 
-        // Mesh¸¦ ¾÷µ¥ÀÌÆ®ÇÏ¿© º¯°æ»çÇ×À» Àû¿ëÇÕ´Ï´Ù.
+        // Meshë¥¼ ì—…ë°ì´íŠ¸í•˜ì—¬ ë³€ê²½ì‚¬í•­ì„ ì ìš©í•©ë‹ˆë‹¤.
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
     }
@@ -315,52 +315,52 @@ public class GroundRemover : MonoBehaviour
 
     bool IsTriangleConnected(Vector3[] vertices, int[] triangles, int triangleIndex1, int triangleIndex2)
     {
-        // »ï°¢Çü 1ÀÇ AABB °è»ê
+        // ì‚¼ê°í˜• 1ì˜ AABB ê³„ì‚°
         Bounds bounds1 = new Bounds(vertices[triangles[triangleIndex1 * 3]], Vector3.zero);
         bounds1.Encapsulate(vertices[triangles[triangleIndex1 * 3 + 1]]);
         bounds1.Encapsulate(vertices[triangles[triangleIndex1 * 3 + 2]]);
 
-        // »ï°¢Çü 2ÀÇ AABB °è»ê
+        // ì‚¼ê°í˜• 2ì˜ AABB ê³„ì‚°
         Bounds bounds2 = new Bounds(vertices[triangles[triangleIndex2 * 3]], Vector3.zero);
         bounds2.Encapsulate(vertices[triangles[triangleIndex2 * 3 + 1]]);
         bounds2.Encapsulate(vertices[triangles[triangleIndex2 * 3 + 2]]);
 
-        // AABB°¡ °ãÄ¡´ÂÁö È®ÀÎ (ºü¸¥ ÇÊÅÍ¸µ)
+        // AABBê°€ ê²¹ì¹˜ëŠ”ì§€ í™•ì¸ (ë¹ ë¥¸ í•„í„°ë§)
         if (!bounds1.Intersects(bounds2))
             return false;
 
-        // AABB°¡ °ãÄ¡´Â °æ¿ì¿¡¸¸ Á¤È®ÇÑ °Å¸® °è»ê
+        // AABBê°€ ê²¹ì¹˜ëŠ” ê²½ìš°ì—ë§Œ ì •í™•í•œ ê±°ë¦¬ ê³„ì‚°
         return CheckExactTriangleDistance(vertices, triangles, triangleIndex1, triangleIndex2);
     }
 
     bool CheckExactTriangleDistance(Vector3[] vertices, int[] triangles, int triangleIndex1, int triangleIndex2)
     {
-        // »ï°¢Çü 1ÀÇ Á¤Á¡µé
+        // ì‚¼ê°í˜• 1ì˜ ì •ì ë“¤
         Vector3 v1_1 = vertices[triangles[triangleIndex1 * 3]];
         Vector3 v1_2 = vertices[triangles[triangleIndex1 * 3 + 1]];
         Vector3 v1_3 = vertices[triangles[triangleIndex1 * 3 + 2]];
 
-        // »ï°¢Çü 2ÀÇ Á¤Á¡µé
+        // ì‚¼ê°í˜• 2ì˜ ì •ì ë“¤
         Vector3 v2_1 = vertices[triangles[triangleIndex2 * 3]];
         Vector3 v2_2 = vertices[triangles[triangleIndex2 * 3 + 1]];
         Vector3 v2_3 = vertices[triangles[triangleIndex2 * 3 + 2]];
 
 
-        // »ï°¢Çü 1ÀÇ ¼¼ º¯
+        // ì‚¼ê°í˜• 1ì˜ ì„¸ ë³€
         Vector3[] edges1 = {
         v1_2 - v1_1,
         v1_3 - v1_2,
         v1_1 - v1_3
     };
 
-        // »ï°¢Çü 2ÀÇ ¼¼ º¯
+        // ì‚¼ê°í˜• 2ì˜ ì„¸ ë³€
         Vector3[] edges2 = {
         v2_2 - v2_1,
         v2_3 - v2_2,
         v2_1 - v2_3
     };
 
-        // ¸ğµç º¯ °£ÀÇ ÃÖ¼Ò °Å¸® °è»ê
+        // ëª¨ë“  ë³€ ê°„ì˜ ìµœì†Œ ê±°ë¦¬ ê³„ì‚°
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
@@ -402,11 +402,11 @@ public class GroundRemover : MonoBehaviour
 
 
 
-    private Vector3 CalculateUpVectorByECEFConvert(Vector3 hitPoint) 
+    private Vector3 CalculateUpVectorByECEFConvert(Vector3 hitPoint)
     {
         double3 worldPosition_d3 = new double3(hitPoint.x, hitPoint.y, hitPoint.z);
 
-        // ¿ùµå ÁÂÇ¥¸¦ ECEF ÁÂÇ¥·Î º¯È¯
+        // ì›”ë“œ ì¢Œí‘œë¥¼ ECEF ì¢Œí‘œë¡œ ë³€í™˜
         double3 ecefPosition = georeference.TransformUnityPositionToEarthCenteredEarthFixed(worldPosition_d3);
 
         double3 upVector_d3 = new double3(-ecefPosition.x, ecefPosition.z, -ecefPosition.y);

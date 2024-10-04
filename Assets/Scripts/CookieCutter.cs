@@ -28,10 +28,10 @@ public class CookieCutter : MonoBehaviour
 
     Dictionary<int, int> ori_new;
 
-    //Æú¸®°ïÀÇ °¢ Á¤Á¡¿¡¼­ yÃà¹æÇâÀ¸·Î RayCastÇØ¼­ ¸¸³ª´Â ÁöÁ¡ÀÇ ÁÂÇ¥, uv°ª
+    //í´ë¦¬ê³¤ì˜ ê° ì •ì ì—ì„œ yì¶•ë°©í–¥ìœ¼ë¡œ RayCastí•´ì„œ ë§Œë‚˜ëŠ” ì§€ì ì˜ ì¢Œí‘œ, uvê°’
     Vector3[] surfaceIntersectionVertices;
     Vector2[] surfaceIntersectionUVs;
-    //Æú¸®°ïÀÇ °¢ Á¤Á¡¿¡¼­ yÃà¹æÇâÀ¸·Î RayCastÇØ¼­ ¸¸³ª´Â ÁöÁ¡À» Æ÷ÇÔÇÏ´Â mesh»ï°¢ÇüÀÇ ÀÎµ¦½º
+    //í´ë¦¬ê³¤ì˜ ê° ì •ì ì—ì„œ yì¶•ë°©í–¥ìœ¼ë¡œ RayCastí•´ì„œ ë§Œë‚˜ëŠ” ì§€ì ì„ í¬í•¨í•˜ëŠ” meshì‚¼ê°í˜•ì˜ ì¸ë±ìŠ¤
     int[] triangleIndex;
 
 
@@ -42,10 +42,10 @@ public class CookieCutter : MonoBehaviour
     }
 
 
-    //ÄíÅ°Ä¿ÆÃÇÒ ¿ÀºêÁ§Æ®¸¦ ¸Å°³º¯¼ö·Î ¹Ş¾Æ¼­ ¿øÇÏ´Â ¿µ¿ª¸¸ ³²±â´Â ÇÔ¼öÀÔ´Ï´Ù.
+    //ì¿ í‚¤ì»¤íŒ…í•  ì˜¤ë¸Œì íŠ¸ë¥¼ ë§¤ê°œë³€ìˆ˜ë¡œ ë°›ì•„ì„œ ì›í•˜ëŠ” ì˜ì—­ë§Œ ë‚¨ê¸°ëŠ” í•¨ìˆ˜ì…ë‹ˆë‹¤.
     public GameObject CookieCut(GameObject _targetObject, Vector3[] _polygon)
     {
-        //Æú¸®°ïÀÌ ¿ÂÀüÇÑÁö Ã¼Å©ÇÕ´Ï´Ù.
+        //í´ë¦¬ê³¤ì´ ì˜¨ì „í•œì§€ ì²´í¬í•©ë‹ˆë‹¤.
         polygon = _polygon;
         if (polygon == null || polygon.Length < 3)
         {
@@ -53,7 +53,7 @@ public class CookieCutter : MonoBehaviour
             return null;
         }
 
-        //Å¸°ÙÀÌ ¿ÂÀüÇÑÁö Ã¼Å©ÇÕ´Ï´Ù.
+        //íƒ€ê²Ÿì´ ì˜¨ì „í•œì§€ ì²´í¬í•©ë‹ˆë‹¤.
         targetObject = _targetObject;
         if (targetObject == null)
         {
@@ -62,7 +62,7 @@ public class CookieCutter : MonoBehaviour
         }
 
 
-        //Å¸ÄÏÀ» º¹»çÇÕ´Ï´Ù.
+        //íƒ€ì¼“ì„ ë³µì‚¬í•©ë‹ˆë‹¤.
         GameObject output = Instantiate(targetObject);
         output.name = "Output";
 
@@ -81,7 +81,7 @@ public class CookieCutter : MonoBehaviour
         ori_new = new Dictionary<int, int>();
 
 
-        //Á¤Á¡ÀÇ ÁÂÇ¥µéÀ» ¿ùµåÁÂÇ¥°è·Î º¯È¯ÇÕ´Ï´Ù. *Æú¸®°ï Á¤Á¡°úÀÇ ÀÏÄ¡ÇÔÀ» ÇÇÇÏ±âÀ§ÇØ epsilonVector¸¦ ´õÇÕ´Ï´Ù.
+        //ì •ì ì˜ ì¢Œí‘œë“¤ì„ ì›”ë“œì¢Œí‘œê³„ë¡œ ë³€í™˜í•©ë‹ˆë‹¤. *í´ë¦¬ê³¤ ì •ì ê³¼ì˜ ì¼ì¹˜í•¨ì„ í”¼í•˜ê¸°ìœ„í•´ epsilonVectorë¥¼ ë”í•©ë‹ˆë‹¤.
         for (int i = 0; i < oVL; i++) originalVertices[i] = output.transform.TransformPoint(originalVertices[i]) + epsilonVector;
 
         newVertices = new List<Vector3>();
@@ -91,7 +91,7 @@ public class CookieCutter : MonoBehaviour
         bool[] isInPolygon = new bool[oVL];
 
 
-        //¸ğµç Á¤Á¡¿¡ ´ëÇÏ¿© polygon ³»ºÎÀÎÁö ¿©ºÎ¸¦ ¹è¿­¿¡ ÀúÀåÇÕ´Ï´Ù.
+        //ëª¨ë“  ì •ì ì— ëŒ€í•˜ì—¬ polygon ë‚´ë¶€ì¸ì§€ ì—¬ë¶€ë¥¼ ë°°ì—´ì— ì €ì¥í•©ë‹ˆë‹¤.
         for (int k = 0; k < oVL; k++)
         {
             Vector3 point = originalVertices[k];
@@ -114,7 +114,7 @@ public class CookieCutter : MonoBehaviour
 
 
 
-        // ´Ù°¢Çü ¿µ¿ªÀÇ °¢ Á¤Á¡¿¡¼­ yÃà ¹æÇâÀ¸·Î RayCastÇÏ¿© ¸¸³ª´Â »ï°¢Çü°ú ±³Á¡ÀÇ ÁÂÇ¥¸¦ ÀúÀåÇÕ´Ï´Ù.
+        // ë‹¤ê°í˜• ì˜ì—­ì˜ ê° ì •ì ì—ì„œ yì¶• ë°©í–¥ìœ¼ë¡œ RayCastí•˜ì—¬ ë§Œë‚˜ëŠ” ì‚¼ê°í˜•ê³¼ êµì ì˜ ì¢Œí‘œë¥¼ ì €ì¥í•©ë‹ˆë‹¤.
         triangleIndex = new int[pL];
         surfaceIntersectionVertices = new Vector3[pL];
         surfaceIntersectionUVs = new Vector2[pL];
@@ -129,14 +129,14 @@ public class CookieCutter : MonoBehaviour
 
             if (targetCollider.Raycast(ray, out hit, Mathf.Infinity))
             {
-                // È÷Æ®µÈ ÁöÁ¡ÀÇ ÁÂÇ¥, uv°ªÀ» ÀúÀå
+                // íˆíŠ¸ëœ ì§€ì ì˜ ì¢Œí‘œ, uvê°’ì„ ì €ì¥
                 surfaceIntersectionVertices[i] = hit.point;
                 surfaceIntersectionUVs[i] = hit.textureCoord;
 
                 MeshCollider meshCollider = hit.collider as MeshCollider;
                 if (meshCollider != null)
                 {
-                    // È÷Æ®µÈ »ï°¢ÇüÀÇ ÀÎµ¦½º¸¦ ÀúÀå()
+                    // íˆíŠ¸ëœ ì‚¼ê°í˜•ì˜ ì¸ë±ìŠ¤ë¥¼ ì €ì¥()
                     triangleIndex[i] = hit.triangleIndex;
                 }
             }
@@ -144,7 +144,7 @@ public class CookieCutter : MonoBehaviour
             {
                 triangleIndex[i] = -1;
                 surfaceIntersectionVertices[i] = new Vector3(0, -1, 0);
-                Debug.Log($"No hit point found at ({currentVertex.x}, ~, {currentVertex.z})");
+                //Debug.Log($"No hit point found at ({currentVertex.x}, ~, {currentVertex.z})");
             }
         }
 
@@ -153,7 +153,7 @@ public class CookieCutter : MonoBehaviour
 
 
 
-        for (int i = 0; i < originalTriangles.Count; i += 3)//i/3Àº ÇöÀç Ã³¸®ÁßÀÎ »ï°¢ÇüÀÇ ¹øÈ£¸¦ ÀÇ¹Ì
+        for (int i = 0; i < originalTriangles.Count; i += 3)//i/3ì€ í˜„ì¬ ì²˜ë¦¬ì¤‘ì¸ ì‚¼ê°í˜•ì˜ ë²ˆí˜¸ë¥¼ ì˜ë¯¸
         {
             int i1 = originalTriangles[i];
             int i2 = originalTriangles[i + 1];
@@ -167,14 +167,14 @@ public class CookieCutter : MonoBehaviour
             bool v2Inside = isInPolygon[i2];
             bool v3Inside = isInPolygon[i3];
 
-            // ¼¼ Á¡ ¸ğµÎ Æú¸®°ï ³»ºÎ¿¡ À§Ä¡ÇÑ °æ¿ì
+            // ì„¸ ì  ëª¨ë‘ í´ë¦¬ê³¤ ë‚´ë¶€ì— ìœ„ì¹˜í•œ ê²½ìš°
             if (v1Inside && v2Inside && v3Inside)
             {
                 TryAddVertexAndTriangle(i1);
                 TryAddVertexAndTriangle(i2);
                 TryAddVertexAndTriangle(i3);
             }
-            // ¼¼ Á¡ ¸ğµÎ Æú¸®°ï ¿ÜºÎ¿¡ À§Ä¡ÇÑ °æ¿ì
+            // ì„¸ ì  ëª¨ë‘ í´ë¦¬ê³¤ ì™¸ë¶€ì— ìœ„ì¹˜í•œ ê²½ìš°
             else if (!v1Inside && !v2Inside && !v3Inside)
             {
                 continue;
@@ -187,7 +187,7 @@ public class CookieCutter : MonoBehaviour
                 int p1q1_index, p1q2_index;
                 int p2q1_index, p2q2_index;
 
-                //³»¿Ü¿Ü
+                //ë‚´ì™¸ì™¸
                 if (v1Inside && !v2Inside && !v3Inside)
                 {
                     GetPointAndIndex(i1, i2, out p1Index, out p1, out p1q1_index, out p1q2_index);
@@ -201,7 +201,7 @@ public class CookieCutter : MonoBehaviour
                     else if (p1q2_index == p2q1_index)
                     {
                         bool vertexInMesh_Case = false;
-                        //¸ğµç Æú¸®°ïÀÇ ²ÀÁöÁ¡¿¡ ´ëÇØ "°¢ ²ÀÁöÁ¡¿¡¼­ yÃà ¹æÇâÀ¸·Î ½ğ Á÷¼±"ÀÌ ÇöÀç Ã³¸®ÁßÀÎ ¸Ş½¬ »ï°¢Çü ¸¸³ª´Â °æ¿ì, ±³Á¡À» Ãß°¡ÇÏ°í, ±³Á¡°ú p1, p2·Î ÀÌ·ç¾îÁø »ï°¢ÇüÀ» Ãß°¡ÇÕ´Ï´Ù.
+                        //ëª¨ë“  í´ë¦¬ê³¤ì˜ ê¼­ì§€ì ì— ëŒ€í•´ "ê° ê¼­ì§€ì ì—ì„œ yì¶• ë°©í–¥ìœ¼ë¡œ ìœ ì§ì„ "ì´ í˜„ì¬ ì²˜ë¦¬ì¤‘ì¸ ë©”ì‰¬ ì‚¼ê°í˜• ë§Œë‚˜ëŠ” ê²½ìš°, êµì ì„ ì¶”ê°€í•˜ê³ , êµì ê³¼ p1, p2ë¡œ ì´ë£¨ì–´ì§„ ì‚¼ê°í˜•ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
                         for (int j = 0; j < pL; j++)
                         {
                             if (triangleIndex[j] == -1) continue;
@@ -225,7 +225,7 @@ public class CookieCutter : MonoBehaviour
                             }
                         }
 
-                        //²ÀÁöÁ¡¿¡¼­ yÃà ¹æÇâÀ¸·Î ½ğ Á÷¼±ÀÌ ÇöÀç Ã³¸®ÁßÀÎ »ï°¢Çü ¹Û¿¡ Á¸ÀçÇÏ´Â °æ¿ì, "±× »ï°¢Çü°ú Æú¸®°ï²ÀÁöÁ¡¿¡¼­ yÃà¹æÇâÀ¸·Î ½ğ Á÷¼±ÀÇ ±³Á¡", p3, p4¸¦ ±¸ÇØ¼­ »ç°¢Çü°ú »ï°¢ÇüÀ» Ãß°¡ÇÕ´Ï´Ù.
+                        //ê¼­ì§€ì ì—ì„œ yì¶• ë°©í–¥ìœ¼ë¡œ ìœ ì§ì„ ì´ í˜„ì¬ ì²˜ë¦¬ì¤‘ì¸ ì‚¼ê°í˜• ë°–ì— ì¡´ì¬í•˜ëŠ” ê²½ìš°, "ê·¸ ì‚¼ê°í˜•ê³¼ í´ë¦¬ê³¤ê¼­ì§€ì ì—ì„œ yì¶•ë°©í–¥ìœ¼ë¡œ ìœ ì§ì„ ì˜ êµì ", p3, p4ë¥¼ êµ¬í•´ì„œ ì‚¬ê°í˜•ê³¼ ì‚¼ê°í˜•ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
                         if (!vertexInMesh_Case)
                         {
                             int p3Index, p4Index;
@@ -256,7 +256,7 @@ public class CookieCutter : MonoBehaviour
                         }
                     }
                 }
-                //¿Ü³»¿Ü
+                //ì™¸ë‚´ì™¸
                 else if (!v1Inside && v2Inside && !v3Inside)
                 {
                     GetPointAndIndex(i2, i3, out p1Index, out p1, out p1q1_index, out p1q2_index);
@@ -272,7 +272,7 @@ public class CookieCutter : MonoBehaviour
                     {
                         bool vertexInMesh_Case = false;
 
-                        //¸ğµç Æú¸®°ïÀÇ ²ÀÁöÁ¡¿¡ ´ëÇØ "Æ¯Á¤ ²ÀÁöÁ¡¿¡¼­ yÃà ¹æÇâÀ¸·Î ½ğ Á÷¼±"ÀÌ ÇöÀç Ã³¸®ÁßÀÎ ¸Ş½¬ »ï°¢Çü ¸¸³ª´Â °æ¿ì, ±³Á¡À» Ãß°¡ÇÏ°í, ±³Á¡°ú p1, p2·Î ÀÌ·ç¾îÁø »ï°¢ÇüÀ» Ãß°¡ÇÕ´Ï´Ù.
+                        //ëª¨ë“  í´ë¦¬ê³¤ì˜ ê¼­ì§€ì ì— ëŒ€í•´ "íŠ¹ì • ê¼­ì§€ì ì—ì„œ yì¶• ë°©í–¥ìœ¼ë¡œ ìœ ì§ì„ "ì´ í˜„ì¬ ì²˜ë¦¬ì¤‘ì¸ ë©”ì‰¬ ì‚¼ê°í˜• ë§Œë‚˜ëŠ” ê²½ìš°, êµì ì„ ì¶”ê°€í•˜ê³ , êµì ê³¼ p1, p2ë¡œ ì´ë£¨ì–´ì§„ ì‚¼ê°í˜•ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
                         for (int j = 0; j < pL; j++)
                         {
                             if (triangleIndex[j] == -1) continue;
@@ -297,7 +297,7 @@ public class CookieCutter : MonoBehaviour
                             }
                         }
 
-                        //²ÀÁöÁ¡¿¡¼­ yÃà ¹æÇâÀ¸·Î ½ğ Á÷¼±ÀÌ ÇöÀç Ã³¸®ÁßÀÎ »ï°¢Çü ¹Û¿¡ Á¸ÀçÇÏ´Â °æ¿ì, "±× »ï°¢Çü°ú Æú¸®°ï²ÀÁöÁ¡¿¡¼­ yÃà¹æÇâÀ¸·Î ½ğ Á÷¼±ÀÇ ±³Á¡", p3, p4¸¦ ±¸ÇØ¼­ »ç°¢Çü°ú »ï°¢ÇüÀ» Ãß°¡ÇÕ´Ï´Ù.
+                        //ê¼­ì§€ì ì—ì„œ yì¶• ë°©í–¥ìœ¼ë¡œ ìœ ì§ì„ ì´ í˜„ì¬ ì²˜ë¦¬ì¤‘ì¸ ì‚¼ê°í˜• ë°–ì— ì¡´ì¬í•˜ëŠ” ê²½ìš°, "ê·¸ ì‚¼ê°í˜•ê³¼ í´ë¦¬ê³¤ê¼­ì§€ì ì—ì„œ yì¶•ë°©í–¥ìœ¼ë¡œ ìœ ì§ì„ ì˜ êµì ", p3, p4ë¥¼ êµ¬í•´ì„œ ì‚¬ê°í˜•ê³¼ ì‚¼ê°í˜•ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
                         if (!vertexInMesh_Case)
                         {
                             int p3Index, p4Index;
@@ -328,7 +328,7 @@ public class CookieCutter : MonoBehaviour
                         }
                     }
                 }
-                //¿Ü¿Ü³»
+                //ì™¸ì™¸ë‚´
                 else if (!v1Inside && !v2Inside && v3Inside)
                 {
                     GetPointAndIndex(i3, i1, out p1Index, out p1, out p1q1_index, out p1q2_index);
@@ -344,7 +344,7 @@ public class CookieCutter : MonoBehaviour
                     {
                         bool vertexInMesh_Case = false;
 
-                        //¸ğµç Æú¸®°ïÀÇ ²ÀÁöÁ¡¿¡ ´ëÇØ "Æ¯Á¤ ²ÀÁöÁ¡¿¡¼­ yÃà ¹æÇâÀ¸·Î ½ğ Á÷¼±"ÀÌ ÇöÀç Ã³¸®ÁßÀÎ ¸Ş½¬ »ï°¢Çü ¸¸³ª´Â °æ¿ì, ±³Á¡À» Ãß°¡ÇÏ°í, ±³Á¡°ú p1, p2·Î ÀÌ·ç¾îÁø »ï°¢ÇüÀ» Ãß°¡ÇÕ´Ï´Ù.
+                        //ëª¨ë“  í´ë¦¬ê³¤ì˜ ê¼­ì§€ì ì— ëŒ€í•´ "íŠ¹ì • ê¼­ì§€ì ì—ì„œ yì¶• ë°©í–¥ìœ¼ë¡œ ìœ ì§ì„ "ì´ í˜„ì¬ ì²˜ë¦¬ì¤‘ì¸ ë©”ì‰¬ ì‚¼ê°í˜• ë§Œë‚˜ëŠ” ê²½ìš°, êµì ì„ ì¶”ê°€í•˜ê³ , êµì ê³¼ p1, p2ë¡œ ì´ë£¨ì–´ì§„ ì‚¼ê°í˜•ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
                         for (int j = 0; j < pL; j++)
                         {
                             if (triangleIndex[j] == -1) continue;
@@ -368,7 +368,7 @@ public class CookieCutter : MonoBehaviour
                             }
                         }
 
-                        //²ÀÁöÁ¡¿¡¼­ yÃà ¹æÇâÀ¸·Î ½ğ Á÷¼±ÀÌ ÇöÀç Ã³¸®ÁßÀÎ »ï°¢Çü ¹Û¿¡ Á¸ÀçÇÏ´Â °æ¿ì, "±× »ï°¢Çü°ú Æú¸®°ï²ÀÁöÁ¡¿¡¼­ yÃà¹æÇâÀ¸·Î ½ğ Á÷¼±ÀÇ ±³Á¡", p3, p4¸¦ ±¸ÇØ¼­ »ç°¢Çü°ú »ï°¢ÇüÀ» Ãß°¡ÇÕ´Ï´Ù.
+                        //ê¼­ì§€ì ì—ì„œ yì¶• ë°©í–¥ìœ¼ë¡œ ìœ ì§ì„ ì´ í˜„ì¬ ì²˜ë¦¬ì¤‘ì¸ ì‚¼ê°í˜• ë°–ì— ì¡´ì¬í•˜ëŠ” ê²½ìš°, "ê·¸ ì‚¼ê°í˜•ê³¼ í´ë¦¬ê³¤ê¼­ì§€ì ì—ì„œ yì¶•ë°©í–¥ìœ¼ë¡œ ìœ ì§ì„ ì˜ êµì ", p3, p4ë¥¼ êµ¬í•´ì„œ ì‚¬ê°í˜•ê³¼ ì‚¼ê°í˜•ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
                         if (!vertexInMesh_Case)
                         {
                             int p3Index, p4Index;
@@ -399,7 +399,7 @@ public class CookieCutter : MonoBehaviour
                         }
                     }
                 }
-                //³»³»¿Ü
+                //ë‚´ë‚´ì™¸
                 else if (v1Inside && v2Inside && !v3Inside)
                 {
                     GetPointAndIndex(i2, i3, out p1Index, out p1, out p1q1_index, out p1q2_index);
@@ -434,7 +434,7 @@ public class CookieCutter : MonoBehaviour
                         TryAddVertexAndTriangle(i1);
                     }
                 }
-                //³»¿Ü³»
+                //ë‚´ì™¸ë‚´
                 else if (v1Inside && !v2Inside && v3Inside)
                 {
                     GetPointAndIndex(i1, i2, out p1Index, out p1, out p1q1_index, out p1q2_index);
@@ -469,7 +469,7 @@ public class CookieCutter : MonoBehaviour
                         TryAddVertexAndTriangle(i3);
                     }
                 }
-                //¿Ü³»³»
+                //ì™¸ë‚´ë‚´
                 else if (!v1Inside && v2Inside && v3Inside)
                 {
                     GetPointAndIndex(i3, i1, out p1Index, out p1, out p1q1_index, out p1q2_index);
@@ -525,7 +525,7 @@ public class CookieCutter : MonoBehaviour
 
         meshFilter.mesh = mesh;
 
-        //MeshColliderµµ »õ mesh ¸ğ½À¿¡ ¸Â°Ô ¹Ù²ß´Ï´Ù.
+        //MeshColliderë„ ìƒˆ mesh ëª¨ìŠµì— ë§ê²Œ ë°”ê¿‰ë‹ˆë‹¤.
         MeshCollider collider = output.GetComponent<MeshCollider>();
         collider.sharedMesh = null;
         collider.sharedMesh = mesh;
@@ -539,16 +539,16 @@ public class CookieCutter : MonoBehaviour
 
         p = FindIntersection(index1, index2, out q1_index, out q2_index);
 
-        //Ã£Àº ±³Á¡À» originalVertices¿¡ Ãß°¡, Ãß°¡ÇÑ °ª¿¡ ´ëÇÑ ÀÎµ¦½º ¹İÈ¯
+        //ì°¾ì€ êµì ì„ originalVerticesì— ì¶”ê°€, ì¶”ê°€í•œ ê°’ì— ëŒ€í•œ ì¸ë±ìŠ¤ ë°˜í™˜
         originalVertices.Add(p);
         pIndex = originalVertices.Count - 1;
 
-        //uv°ªÀ» º¸°£ÇÏ¿©  originalUVs¿¡ Ãß°¡
+        //uvê°’ì„ ë³´ê°„í•˜ì—¬  originalUVsì— ì¶”ê°€
         originalUVs.Add(CalculateUV(index1, index2, pIndex));
 
     }
 
-    //¼±ºĞÀÇ ¾ç ³¡Á¡°ú ¼±ºĞ»óÀÇ ÇÑÁ¡ÀÇ (originalVertices»óÀÇ)index°¡ ÁÖ¾îÁ³À» ¶§ ¼±ºĞ»óÀÇ ÇÑÁ¡ÀÇ uv°ªÀ» °è»êÇÏ´Â ÇÔ¼öÀÔ´Ï´Ù.
+    //ì„ ë¶„ì˜ ì–‘ ëì ê³¼ ì„ ë¶„ìƒì˜ í•œì ì˜ (originalVerticesìƒì˜)indexê°€ ì£¼ì–´ì¡Œì„ ë•Œ ì„ ë¶„ìƒì˜ í•œì ì˜ uvê°’ì„ ê³„ì‚°í•˜ëŠ” í•¨ìˆ˜ì…ë‹ˆë‹¤.
     private Vector2 CalculateUV(int i1, int i2, int pi)
     {
         Vector3 v1 = originalVertices[i1];
@@ -564,7 +564,7 @@ public class CookieCutter : MonoBehaviour
     }
 
 
-    //µÎÁ¡ v1, v2¸¦ ÀÕ´Â ¼±ºĞ°ú ÀÓÀÇÀÇ Æú¸®°ïÀÇ ±³Á¡ÀÌ Á¸ÀçÇÒ ¶§, ±× ±³Á¡ÀÇ ÁÂÇ¥¸¦ Ã£´Â ÇÔ¼öÀÔ´Ï´Ù.
+    //ë‘ì  v1, v2ë¥¼ ì‡ëŠ” ì„ ë¶„ê³¼ ì„ì˜ì˜ í´ë¦¬ê³¤ì˜ êµì ì´ ì¡´ì¬í•  ë•Œ, ê·¸ êµì ì˜ ì¢Œí‘œë¥¼ ì°¾ëŠ” í•¨ìˆ˜ì…ë‹ˆë‹¤.
     private Vector3 FindIntersection(int i1, int i2, out int q1_index, out int q2_index)
     {
         Vector3 v1 = originalVertices[i1];
@@ -588,7 +588,7 @@ public class CookieCutter : MonoBehaviour
             }
         }
 
-        Debug.Log("!!! ¿À·ù : ±³Á¡À» ±¸ÇÏÁö ¸øÇß½À´Ï´Ù. ÀÓ½Ã·Î v1À» ´ë½Å »ç¿ëÇÕ´Ï´Ù. !!!");
+        Debug.Log("!!! ì˜¤ë¥˜ : êµì ì„ êµ¬í•˜ì§€ ëª»í–ˆìŠµë‹ˆë‹¤. ì„ì‹œë¡œ v1ì„ ëŒ€ì‹  ì‚¬ìš©í•©ë‹ˆë‹¤. !!!");
         q1_index = -1;
         q2_index = -2;
         return v1;
@@ -651,7 +651,7 @@ public class CookieCutter : MonoBehaviour
 
 
 
-    //Æú¸®°ïÀÇ ÇÑ ²ÀÁşÁ¡¿¡¼­ yÃà°ú ÆòÇàÇÏ°Ô ½ğ Á÷¼±ÀÌ mesh¿Í ¸¸³ª´ÂÁö È®ÀÎÇÏ°í, ¸Å°³º¯¼ö¸¦ ÅëÇØ ±³Á¡ÀÇ ÁÂÇ¥¸¦ Àü´ŞÇÏ´Â ÇÔ¼öÀÔ´Ï´Ù.
+    //í´ë¦¬ê³¤ì˜ í•œ ê¼­ì§“ì ì—ì„œ yì¶•ê³¼ í‰í–‰í•˜ê²Œ ìœ ì§ì„ ì´ meshì™€ ë§Œë‚˜ëŠ”ì§€ í™•ì¸í•˜ê³ , ë§¤ê°œë³€ìˆ˜ë¥¼ í†µí•´ êµì ì˜ ì¢Œí‘œë¥¼ ì „ë‹¬í•˜ëŠ” í•¨ìˆ˜ì…ë‹ˆë‹¤.
     public static bool IsLineIntersectingMesh(Vector3 linePoint, Vector3[] mesh, out Vector3 intersection)
     {
         if (mesh.Length != 3)
@@ -663,15 +663,15 @@ public class CookieCutter : MonoBehaviour
         Vector3 v1 = mesh[1];
         Vector3 v2 = mesh[2];
 
-        //Æò¸éÀÇ ³ë¸Öº¤ÅÍ °è»ê
+        //í‰ë©´ì˜ ë…¸ë©€ë²¡í„° ê³„ì‚°
         Vector3 d0 = v1 - v0;
         Vector3 d1 = v2 - v0;
         Vector3 normal = Vector3.Cross(d0, d1);
 
-        // Á÷¼±°ú Æò¸éÀÌ ÆòÇàÇÑ °æ¿ì
+        // ì§ì„ ê³¼ í‰ë©´ì´ í‰í–‰í•œ ê²½ìš°
         if (Math.Abs(normal.y) < float.Epsilon)
         {
-            Debug.Log("Á÷¼±°ú ¸Ş½¬°¡ ÆòÇàÇÏ¿© Åë°ú¿©ºÎ¸¦ ÆÇ´ÜÇÒ ¼ö ¾ø½À´Ï´Ù.");
+            Debug.Log("ì§ì„ ê³¼ ë©”ì‰¬ê°€ í‰í–‰í•˜ì—¬ í†µê³¼ì—¬ë¶€ë¥¼ íŒë‹¨í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             intersection = new Vector3();
             return false;
         }
@@ -680,13 +680,13 @@ public class CookieCutter : MonoBehaviour
         float d = Vector3.Dot(normal, v0);
         float t = (d - Vector3.Dot(normal, linePoint)) / normal.y;
 
-        //Æò¸é°ú Æú¸®°ïÀÇ ²ÀÁşÁ¡À¸·ÎºÎÅÍ ¼öÁ÷À¸·Î ½ğ Á÷¼±ÀÌ ¸¸³ª´Â Á¡À» °è»ê
+        //í‰ë©´ê³¼ í´ë¦¬ê³¤ì˜ ê¼­ì§“ì ìœ¼ë¡œë¶€í„° ìˆ˜ì§ìœ¼ë¡œ ìœ ì§ì„ ì´ ë§Œë‚˜ëŠ” ì ì„ ê³„ì‚°
         intersection = new Vector3(linePoint.x, t, linePoint.z);
 
-        // ±× Á¡ÀÌ mesh ³»ºÎ¿¡ Á¸ÀçÇÏ´ÂÁö È®ÀÎ
+        // ê·¸ ì ì´ mesh ë‚´ë¶€ì— ì¡´ì¬í•˜ëŠ”ì§€ í™•ì¸
         if (IsPointInTriangle(intersection, v0, v1, v2))
         {
-            Debug.Log($"¸Ş½¬°¡ Æú¸®°ïÀÇ ²ÀÁöÁ¡À» Æ÷ÇÔÇÑ´Ù. ±³Á¡ : {intersection}");
+            Debug.Log($"ë©”ì‰¬ê°€ í´ë¦¬ê³¤ì˜ ê¼­ì§€ì ì„ í¬í•¨í•œë‹¤. êµì  : {intersection}");
             return true;
         }
         else
@@ -695,7 +695,7 @@ public class CookieCutter : MonoBehaviour
         }
     }
 
-    //Æò¸é»óÀÇ Á¡ÀÌ Æú¸®°ï ³»ºÎ¿¡ À§Ä¡ÇÏ´ÂÁö È®ÀÎÇÏ´Â ÇÔ¼öÀÔ´Ï´Ù.
+    //í‰ë©´ìƒì˜ ì ì´ í´ë¦¬ê³¤ ë‚´ë¶€ì— ìœ„ì¹˜í•˜ëŠ”ì§€ í™•ì¸í•˜ëŠ” í•¨ìˆ˜ì…ë‹ˆë‹¤.
     private static bool IsPointInTriangle(Vector3 p, Vector3 p0, Vector3 p1, Vector3 p2)
     {
         Vector3 v0 = p2 - p0;
@@ -715,7 +715,7 @@ public class CookieCutter : MonoBehaviour
         return (u >= 0) && (v >= 0) && (u + v < 1);
     }
 
-    //µÎ º¤ÅÍ°¡ °°ÀºÁö ºñ±³ÇÕ´Ï´Ù. (float¿¬»ê¿¡¼­ ¹Ì¼¼ÇÑ ¿ÀÂ÷°¡ ¹ß»ıÇÏ´õ¶óµµ °°´Ù°í ÆÇ´ÜÇÏ±â À§ÇØ epsilonÀ» »ç¿ëÇÏ¿© ºñ±³ÇÕ´Ï´Ù.)
+    //ë‘ ë²¡í„°ê°€ ê°™ì€ì§€ ë¹„êµí•©ë‹ˆë‹¤. (floatì—°ì‚°ì—ì„œ ë¯¸ì„¸í•œ ì˜¤ì°¨ê°€ ë°œìƒí•˜ë”ë¼ë„ ê°™ë‹¤ê³  íŒë‹¨í•˜ê¸° ìœ„í•´ epsilonì„ ì‚¬ìš©í•˜ì—¬ ë¹„êµí•©ë‹ˆë‹¤.)
     private bool isEqual(Vector3 v1, Vector3 v2)
     {
         if (MathF.Abs(v1.x - v2.x) < epsilon && MathF.Abs(v1.y - v2.y) < epsilon && MathF.Abs(v1.z - v2.z) < epsilon) return true;

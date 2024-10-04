@@ -3,17 +3,17 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System.Linq;
 
-// ¸¶¿ì½º°¡ À§Ä¡ÇÑ °÷ÀÇ Surface¸¦ °ËÃâÇÏ´Â ±â´ÉÀ» ´ãÀº class.
-// Å¬¸¯ÇÑ ÁöÁ¡ÀÇ »ï°¢ÇüÀ» ½ÃÀÛÀ¸·Î ÁÖº¯ »ï°¢ÇüµéÀ» Ã£°í, normalVector°£ÀÇ °¢µµÂ÷ÀÌ°¡ ÀÏÁ¤ ÀÌÇÏÀÌ¸é °°Àº cluster·Î ¹­´Â °úÁ¤À» ¹İº¹ÇÏ¿©  surface¸¦ °ËÃâÇÑ´Ù.
-// 3D ¸ğµ¨ÀÇ ¸ğ¼­¸®°¡ ÀÛÀº Á¶°¢À¸·Î ¹¶ÅöÇÏ°Ô ÀÌ¾îÁ®ÀÖ´Â °æ¿ì¿¡, Surface¸¦ Àß ºĞ¸®ÇÏÁö ¸øÇÑ´Ù. ±×·¡¼­ ÇöÀç´Â »ç¿ëÇÏÁö ¾ÊÀ½.
+// ë§ˆìš°ìŠ¤ê°€ ìœ„ì¹˜í•œ ê³³ì˜ Surfaceë¥¼ ê²€ì¶œí•˜ëŠ” ê¸°ëŠ¥ì„ ë‹´ì€ class.
+// í´ë¦­í•œ ì§€ì ì˜ ì‚¼ê°í˜•ì„ ì‹œì‘ìœ¼ë¡œ ì£¼ë³€ ì‚¼ê°í˜•ë“¤ì„ ì°¾ê³ , normalVectorê°„ì˜ ê°ë„ì°¨ì´ê°€ ì¼ì • ì´í•˜ì´ë©´ ê°™ì€ clusterë¡œ ë¬¶ëŠ” ê³¼ì •ì„ ë°˜ë³µí•˜ì—¬  surfaceë¥¼ ê²€ì¶œí•œë‹¤.
+// 3D ëª¨ë¸ì˜ ëª¨ì„œë¦¬ê°€ ì‘ì€ ì¡°ê°ìœ¼ë¡œ ë­‰íˆ­í•˜ê²Œ ì´ì–´ì ¸ìˆëŠ” ê²½ìš°ì—, Surfaceë¥¼ ì˜ ë¶„ë¦¬í•˜ì§€ ëª»í•œë‹¤. ê·¸ë˜ì„œ í˜„ì¬ëŠ” ì‚¬ìš©í•˜ì§€ ì•ŠìŒ.
 public class SurfaceFinder : MonoBehaviour
 {
     public Material newMaterial;
-    public GameObject redDotPrefab; // ¹Ì¸® ÁØºñÇØµĞ redDot ÇÁ¸®ÆÕ
-    public float degree = 30.0f; // °¢µµ Â÷ÀÌ Çã¿ë°ªÀ» public º¯¼ö·Î ¼³Á¤
-    public float epsilon = 0.001f; // ÁÂÇ¥ ºñ±³ ½Ã »ç¿ëÇÏ´Â ¿ÀÂ÷ Çã¿ë°ª
+    public GameObject redDotPrefab; // ë¯¸ë¦¬ ì¤€ë¹„í•´ë‘” redDot í”„ë¦¬íŒ¹
+    public float degree = 30.0f; // ê°ë„ ì°¨ì´ í—ˆìš©ê°’ì„ public ë³€ìˆ˜ë¡œ ì„¤ì •
+    public float epsilon = 0.001f; // ì¢Œí‘œ ë¹„êµ ì‹œ ì‚¬ìš©í•˜ëŠ” ì˜¤ì°¨ í—ˆìš©ê°’
 
-    private Dictionary<int, HashSet<int>> vertexMapping; // µ¿ÀÏÇÑ À§Ä¡¸¦ °¡Áö´Â ¹öÅØ½º ¸ÅÇÎ
+    private Dictionary<int, HashSet<int>> vertexMapping; // ë™ì¼í•œ ìœ„ì¹˜ë¥¼ ê°€ì§€ëŠ” ë²„í…ìŠ¤ ë§¤í•‘
     private Mesh selectedMesh;
     private Transform selectedObjectTransform;
 
@@ -44,7 +44,7 @@ public class SurfaceFinder : MonoBehaviour
                 selectedMesh = meshCollider.sharedMesh;
                 selectedObjectTransform = hit.collider.transform;
 
-                // µ¿ÀÏÇÑ À§Ä¡¸¦ °¡Áö´Â ¹öÅØ½º ¸ÅÇÎ »ı¼º
+                // ë™ì¼í•œ ìœ„ì¹˜ë¥¼ ê°€ì§€ëŠ” ë²„í…ìŠ¤ ë§¤í•‘ ìƒì„±
                 CreateVertexMapping();
 
                 int triangleIndex = hit.triangleIndex * 3;
@@ -52,11 +52,11 @@ public class SurfaceFinder : MonoBehaviour
                 if (triangleIndex < 0 || triangleIndex >= selectedMesh.triangles.Length) return;
 
 
-                // Surface¸¦ Ã£°í, Edge¸¦ Ã£À½
+                // Surfaceë¥¼ ì°¾ê³ , Edgeë¥¼ ì°¾ìŒ
                 List<int> connectedTriangles = FindConnectedTriangles(triangleIndex);
                 List<List<int>> edgeVertices = FindEdgeVertices(connectedTriangles);
 
-                // Edge Á¤º¸ ·Î±× Ãâ·Â
+                // Edge ì •ë³´ ë¡œê·¸ ì¶œë ¥
                 int edgeNumber = 1;
                 foreach (var edge in edgeVertices)
                 {
@@ -64,7 +64,7 @@ public class SurfaceFinder : MonoBehaviour
                     edgeNumber++;
                 }
 
-                // »õ·Î¿î Surface¿¡ Material Àû¿ë
+                // ìƒˆë¡œìš´ Surfaceì— Material ì ìš©
                 ApplyMaterialToTriangles(connectedTriangles);
             }
         }
@@ -182,9 +182,9 @@ public class SurfaceFinder : MonoBehaviour
         Mesh newMesh = new Mesh();
         newMesh.vertices = selectedMesh.vertices;
         newMesh.normals = selectedMesh.normals;
-        newMesh.uv = selectedMesh.uv; // UV ¸ÊÇÎ º¸Á¸
+        newMesh.uv = selectedMesh.uv; // UV ë§µí•‘ ë³´ì¡´
 
-        // ¿øº» ¸Ş½¬ÀÇ »ï°¢Çü ¸®½ºÆ®¸¦ º¹»çÇÏ¿© ¼öÁ¤
+        // ì›ë³¸ ë©”ì‰¬ì˜ ì‚¼ê°í˜• ë¦¬ìŠ¤íŠ¸ë¥¼ ë³µì‚¬í•˜ì—¬ ìˆ˜ì •
         List<int> mainMeshTriangles = new List<int>(selectedMesh.triangles);
         List<int> submeshTriangles = new List<int>();
 
@@ -194,15 +194,15 @@ public class SurfaceFinder : MonoBehaviour
             {
                 int vertexIndex = triangleIndex + i;
                 submeshTriangles.Add(mainMeshTriangles[vertexIndex]);
-                mainMeshTriangles[vertexIndex] = -1; // ¸ŞÀÎ ¸Ş½¬¿¡¼­ »ï°¢Çü Á¦°Å Ç¥½Ã
+                mainMeshTriangles[vertexIndex] = -1; // ë©”ì¸ ë©”ì‰¬ì—ì„œ ì‚¼ê°í˜• ì œê±° í‘œì‹œ
             }
         }
 
         mainMeshTriangles.RemoveAll(index => index == -1);
 
         newMesh.subMeshCount = 2;
-        newMesh.SetTriangles(mainMeshTriangles.ToArray(), 0); // ¸ŞÀÎ ¼­ºê¸Ş½¬
-        newMesh.SetTriangles(submeshTriangles.ToArray(), 1);  // »õ·Î¿î ¼­ºê¸Ş½¬
+        newMesh.SetTriangles(mainMeshTriangles.ToArray(), 0); // ë©”ì¸ ì„œë¸Œë©”ì‰¬
+        newMesh.SetTriangles(submeshTriangles.ToArray(), 1);  // ìƒˆë¡œìš´ ì„œë¸Œë©”ì‰¬
 
         newMesh.RecalculateNormals();
 
@@ -227,7 +227,7 @@ public class SurfaceFinder : MonoBehaviour
         Vector3[] vertices = selectedMesh.vertices;
         int[] meshTriangles = selectedMesh.triangles;
 
-        // »ï°¢ÇüÀÇ ¸ğµç ¿§Áö¸¦ ÃßÃâÇÏ¿© µñ¼Å³Ê¸®¿¡ ÀúÀå (Á¤·ÄÇÏ¿© ÀúÀå)
+        // ì‚¼ê°í˜•ì˜ ëª¨ë“  ì—£ì§€ë¥¼ ì¶”ì¶œí•˜ì—¬ ë”•ì…”ë„ˆë¦¬ì— ì €ì¥ (ì •ë ¬í•˜ì—¬ ì €ì¥)
         for (int i = 0; i < triangles.Count; i += 3)
         {
             AddEdgeToDict(edgeDict, (meshTriangles[triangles[i]], meshTriangles[triangles[i + 1]]));
@@ -235,10 +235,10 @@ public class SurfaceFinder : MonoBehaviour
             AddEdgeToDict(edgeDict, (meshTriangles[triangles[i + 2]], meshTriangles[triangles[i]]));
         }
 
-        // µñ¼Å³Ê¸®¿¡ ÀúÀåµÈ ¿§Áö Áß ÇÏ³ª¸¸ µîÀåÇÏ´Â ¿§Áöµé¸¸ ÃßÃâ
+        // ë”•ì…”ë„ˆë¦¬ì— ì €ì¥ëœ ì—£ì§€ ì¤‘ í•˜ë‚˜ë§Œ ë“±ì¥í•˜ëŠ” ì—£ì§€ë“¤ë§Œ ì¶”ì¶œ
         List<(int, int)> boundaryEdges = edgeDict.Where(edge => edge.Value == 1).Select(edge => edge.Key).ToList();
 
-        // ¿§ÁöµéÀ» ¿¬°áÇÏ¿© ¼ø¼­´ë·Î Á¤·ÄµÈ ¿§Áö ¸®½ºÆ®¸¦ »ı¼º
+        // ì—£ì§€ë“¤ì„ ì—°ê²°í•˜ì—¬ ìˆœì„œëŒ€ë¡œ ì •ë ¬ëœ ì—£ì§€ ë¦¬ìŠ¤íŠ¸ë¥¼ ìƒì„±
         List<List<int>> orderedEdges = OrderEdges(boundaryEdges);
 
         return orderedEdges;
@@ -246,7 +246,7 @@ public class SurfaceFinder : MonoBehaviour
 
     void AddEdgeToDict(Dictionary<(int, int), int> edgeDict, (int, int) edge)
     {
-        // ¿§Áö¸¦ Ç×»ó ³·Àº ÀÎµ¦½º°¡ ¸ÕÀú ¿Àµµ·Ï Á¤·ÄÇÏ¿© ÀÏ°ü¼º À¯Áö
+        // ì—£ì§€ë¥¼ í•­ìƒ ë‚®ì€ ì¸ë±ìŠ¤ê°€ ë¨¼ì € ì˜¤ë„ë¡ ì •ë ¬í•˜ì—¬ ì¼ê´€ì„± ìœ ì§€
         var sortedEdge = edge.Item1 < edge.Item2 ? edge : (edge.Item2, edge.Item1);
         if (edgeDict.ContainsKey(sortedEdge))
         {

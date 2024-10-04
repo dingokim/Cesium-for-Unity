@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public float h = -500;//Ä«¸Þ¶ó ³ôÀÌ.
-    public float rotationSpeed = 5.0f; // ¸¶¿ì½º È¸Àü ¼Óµµ
-    public float moveSpeed = 10.0f; // Ä«¸Þ¶ó ÀÌµ¿ ¼Óµµ
-    public float zoomSpeed = 10.0f; // ÁÜ ¼Óµµ
-    public float minZoomDistance = 2.0f; // ÃÖ¼Ò ÁÜ °Å¸®
-    public float maxZoomDistance = 50.0f; // ÃÖ´ë ÁÜ °Å¸®
+    public float h = -500;//ì¹´ë©”ë¼ ë†’ì´.
+    public float rotationSpeed = 5.0f; // ë§ˆìš°ìŠ¤ íšŒì „ ì†ë„
+    public float moveSpeed = 10.0f; // ì¹´ë©”ë¼ ì´ë™ ì†ë„
+    public float zoomSpeed = 10.0f; // ì¤Œ ì†ë„
+    public float minZoomDistance = 2.0f; // ìµœì†Œ ì¤Œ ê±°ë¦¬
+    public float maxZoomDistance = 50.0f; // ìµœëŒ€ ì¤Œ ê±°ë¦¬
 
     private Vector3 currentRotation;
 
@@ -19,7 +19,7 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        // ¸¶¿ì½º ¿ìÅ¬¸¯ µå·¡±×·Î È¸Àü
+        // ë§ˆìš°ìŠ¤ ìš°í´ë¦­ ë“œëž˜ê·¸ë¡œ íšŒì „
         if (Input.GetMouseButton(1))
         {
             float mouseX = Input.GetAxis("Mouse X") * rotationSpeed;
@@ -28,41 +28,41 @@ public class CameraController : MonoBehaviour
             currentRotation.y += mouseX;
             currentRotation.x -= mouseY;
 
-            // xÃà È¸ÀüÀ» -90µµ¿¡¼­ 90µµ »çÀÌ·Î Á¦ÇÑ
+            // xì¶• íšŒì „ì„ -90ë„ì—ì„œ 90ë„ ì‚¬ì´ë¡œ ì œí•œ
             currentRotation.x = Mathf.Clamp(currentRotation.x, -89.9f, 89.9f);
 
             transform.eulerAngles = currentRotation;
         }
 
-        // WSAD·Î Ä«¸Þ¶ó ÁÂÇ¥°è ±âÁØ ÀÌµ¿ (YÃà Á¦°Å)
+        // WSADë¡œ ì¹´ë©”ë¼ ì¢Œí‘œê³„ ê¸°ì¤€ ì´ë™ (Yì¶• ì œê±°)
         Vector3 forward = transform.forward;
-        forward.y = 0; // Y ¼ººÐ Á¦°Å
+        forward.y = 0; // Y ì„±ë¶„ ì œê±°
         if (forward == Vector3.zero) forward = Vector3.forward;
-        forward.Normalize(); // ¹æÇâ º¤ÅÍ Á¤±ÔÈ­
+        forward.Normalize(); // ë°©í–¥ ë²¡í„° ì •ê·œí™”
 
         Vector3 right = transform.right;
-        right.y = 0; // Y ¼ººÐ Á¦°Å
-        right.Normalize(); // ¹æÇâ º¤ÅÍ Á¤±ÔÈ­
+        right.y = 0; // Y ì„±ë¶„ ì œê±°
+        right.Normalize(); // ë°©í–¥ ë²¡í„° ì •ê·œí™”
 
-        float moveX = Input.GetAxis("Horizontal") * moveSpeed * Time.deltaTime; // A, D ÀÔ·Â
-        float moveZ = Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime; // W, S ÀÔ·Â
+        float moveX = Input.GetAxis("Horizontal") * moveSpeed * Time.deltaTime; // A, D ìž…ë ¥
+        float moveZ = Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime; // W, S ìž…ë ¥
         Vector3 move = right * moveX + forward * moveZ;
 
         transform.position += move;
 
-        // ¸¶¿ì½º ÈÙ·Î Ä«¸Þ¶ó ÁÂÇ¥°è ±âÁØ ¾ÕµÚ ÀÌµ¿ (ÁÜÀÎ/ÁÜ¾Æ¿ô)
+        // ë§ˆìš°ìŠ¤ íœ ë¡œ ì¹´ë©”ë¼ ì¢Œí‘œê³„ ê¸°ì¤€ ì•žë’¤ ì´ë™ (ì¤Œì¸/ì¤Œì•„ì›ƒ)
         float scroll = Input.GetAxis("Mouse ScrollWheel") * zoomSpeed;
         //float scroll = Input.mouseScrollDelta.y * zoomSpeed;
         Vector3 forwardMove = transform.forward * scroll;
 
-        // ÃÖ¼Ò/ÃÖ´ë °Å¸® Á¦ÇÑ
+        // ìµœì†Œ/ìµœëŒ€ ê±°ë¦¬ ì œí•œ
         float distanceFromOrigin = Vector3.Distance(transform.position + forwardMove, Vector3.zero);
         if (distanceFromOrigin >= minZoomDistance && distanceFromOrigin <= maxZoomDistance)
         {
             transform.position += forwardMove;
         }
 
-        //Ä«¸Þ¶óÀÇ ³ôÀÌ h·Î °íÁ¤
+        //ì¹´ë©”ë¼ì˜ ë†’ì´ hë¡œ ê³ ì •
         transform.position = new Vector3(transform.position.x, h, transform.position.z);
     }
 }

@@ -5,9 +5,11 @@ using static UnityEditor.Rendering.CameraUI;
 
 public class ObjectCombiner : MonoBehaviour
 {
-    public void CombineChildren() 
+    public void CombineChildren()
     {
         List<GameObject> childrenList = new List<GameObject>();
+
+        Debug.Log($" ì½¤ë°”ì¸í•  ìì‹ ê°œìˆ˜ : {transform.childCount}");
         for (int i = 0; i < transform.childCount; i++)
         {
             childrenList.Add(transform.GetChild(i).gameObject);
@@ -32,10 +34,10 @@ public class ObjectCombiner : MonoBehaviour
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
         Texture2D[] textures = new Texture2D[meshRenderers.Length];
 
-        // ºÎ¸ğÀÇ º¯È¯ Çà·ÄÀ» ¹Ì¸® ÀúÀåÇØ µÒ
+        // ë¶€ëª¨ì˜ ë³€í™˜ í–‰ë ¬ì„ ë¯¸ë¦¬ ì €ì¥í•´ ë‘ 
         Matrix4x4 parentTransform = transform.worldToLocalMatrix;
 
-        // °¢ ¸Ş½¬ÀÇ ÅØ½ºÃ³¸¦ °¡Á®¿Í ¹è¿­¿¡ ÀúÀå
+        // ê° ë©”ì‰¬ì˜ í…ìŠ¤ì²˜ë¥¼ ê°€ì ¸ì™€ ë°°ì—´ì— ì €ì¥
         for (int i = 0; i < meshRenderers.Length; i++)
         {
             Material originalMaterial = meshRenderers[i].sharedMaterial;
@@ -45,11 +47,11 @@ public class ObjectCombiner : MonoBehaviour
             }
             else
             {
-                textures[i] = Texture2D.whiteTexture; // ÅØ½ºÃ³°¡ ¾ø´Â °æ¿ì ±âº» Èò»ö ÅØ½ºÃ³ »ç¿ë
+                textures[i] = Texture2D.whiteTexture; // í…ìŠ¤ì²˜ê°€ ì—†ëŠ” ê²½ìš° ê¸°ë³¸ í°ìƒ‰ í…ìŠ¤ì²˜ ì‚¬ìš©
             }
         }
 
-        // ÅØ½ºÃ³ ¾ÆÆ²¶ó½º »ı¼º
+        // í…ìŠ¤ì²˜ ì•„í‹€ë¼ìŠ¤ ìƒì„±
         Texture2D atlas = new Texture2D(8192, 8192);
         Rect[] uvs = atlas.PackTextures(textures, 0, 8192);
 
@@ -59,14 +61,14 @@ public class ObjectCombiner : MonoBehaviour
         {
             combine[i].mesh = meshFilters[i].sharedMesh;
 
-            // ÀÚ½Ä ¿ÀºêÁ§Æ®ÀÇ ·ÎÄÃ ÁÂÇ¥¸¦ À¯ÁöÇÏ±â À§ÇØ ºÎ¸ğÀÇ º¯È¯À» Àû¿ë
+            // ìì‹ ì˜¤ë¸Œì íŠ¸ì˜ ë¡œì»¬ ì¢Œí‘œë¥¼ ìœ ì§€í•˜ê¸° ìœ„í•´ ë¶€ëª¨ì˜ ë³€í™˜ì„ ì ìš©
             combine[i].transform = parentTransform * meshFilters[i].transform.localToWorldMatrix;
 
-            // »õ·Î¿î UV ¸ÅÇÎÀ» À§ÇÑ ¹è¿­ »ı¼º
+            // ìƒˆë¡œìš´ UV ë§¤í•‘ì„ ìœ„í•œ ë°°ì—´ ìƒì„±
             Vector2[] uvsOriginal = meshFilters[i].sharedMesh.uv;
             Vector2[] uvsNew = new Vector2[uvsOriginal.Length];
 
-            // ±âÁ¸ UV¸¦ »õ·Î¿î ¾ÆÆ²¶ó½º UV·Î º¯È¯
+            // ê¸°ì¡´ UVë¥¼ ìƒˆë¡œìš´ ì•„í‹€ë¼ìŠ¤ UVë¡œ ë³€í™˜
             for (int j = 0; j < uvsOriginal.Length; j++)
             {
                 uvsNew[j] = new Vector2(
@@ -74,46 +76,58 @@ public class ObjectCombiner : MonoBehaviour
                     Mathf.Lerp(uvs[i].yMin, uvs[i].yMax, uvsOriginal[j].y)
                 );
             }
-            meshFilters[i].sharedMesh.uv = uvsNew; // ¼öÁ¤µÈ UV¸¦ ´Ù½Ã ¸Ş½¬¿¡ ¼³Á¤
+            meshFilters[i].sharedMesh.uv = uvsNew; // ìˆ˜ì •ëœ UVë¥¼ ë‹¤ì‹œ ë©”ì‰¬ì— ì„¤ì •
         }
 
-        // ¸ğµç ¸Ş½¬¸¦ ÇÏ³ªÀÇ ¸Ş½¬·Î º´ÇÕ
+        // ëª¨ë“  ë©”ì‰¬ë¥¼ í•˜ë‚˜ì˜ ë©”ì‰¬ë¡œ ë³‘í•©
         Mesh combinedMesh = new Mesh();
+
+        // UInt32 ì¸ë±ìŠ¤ í¬ë§·ì„ ì‚¬ìš©í•˜ì—¬ ì •ì  ìˆ˜ ì œí•œì„ ëŠ˜ë¦¼///////////////////////////////////////////////////////////////////////////////////////////////////
+        combinedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+
         combinedMesh.CombineMeshes(combine, true, true);
 
-        // º´ÇÕµÈ ¸Ş½¬¸¦ MeshFilter¿¡ ÇÒ´ç
+        // ë³‘í•©ëœ ë©”ì‰¬ë¥¼ MeshFilterì— í• ë‹¹
         MeshFilter meshFilter = output.AddComponent<MeshFilter>();
         meshFilter.mesh = combinedMesh;
 
-        // »õ MeshRenderer¸¦ Ãß°¡ÇÏ°í, URPÀÇ Lit ¼ÎÀÌ´õ¸¦ »ç¿ëÇÏ¿© »õ·Î »ı¼ºµÈ ¸ÓÆ¼¸®¾ó°ú ÅØ½ºÃ³ ¾ÆÆ²¶ó½º¸¦ Àû¿ë
+        // ìƒˆ MeshRendererë¥¼ ì¶”ê°€í•˜ê³ , URPì˜ Lit ì…°ì´ë”ë¥¼ ì‚¬ìš©í•˜ì—¬ ìƒˆë¡œ ìƒì„±ëœ ë¨¸í‹°ë¦¬ì–¼ê³¼ í…ìŠ¤ì²˜ ì•„í‹€ë¼ìŠ¤ë¥¼ ì ìš©
         MeshRenderer meshRenderer = output.AddComponent<MeshRenderer>();
         if (meshRenderer != null)
         {
             Material newMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
             newMaterial.mainTexture = atlas;
 
-            Debug.Log("New material created with URP Lit shader: " + newMaterial.shader.name);
-            Debug.Log("Texture assigned to material: " + (newMaterial.mainTexture != null ? "Yes" : "No"));
+            //Debug.Log("New material created with URP Lit shader: " + newMaterial.shader.name);
+            //Debug.Log("Texture assigned to material: " + (newMaterial.mainTexture != null ? "Yes" : "No"));
 
             meshRenderer.sharedMaterial = newMaterial;
 
-            Debug.Log("Material assigned to MeshRenderer.");
+            //Debug.Log("Material assigned to MeshRenderer.");
         }
 
-        // MeshCollider Ãß°¡
+        // MeshCollider ì¶”ê°€
         MeshCollider meshCollider = output.AddComponent<MeshCollider>();
         meshCollider.sharedMesh = combinedMesh;
-        Debug.Log("MeshCollider assigned to the combined mesh.");
+        //Debug.Log("MeshCollider assigned to the combined mesh.");
 
-        // ¿øº» ÀÚ½Ä ¿ÀºêÁ§Æ® Á¦°Å(°úÁ¤ È®ÀÎÀ» À§ÇØ, ÇöÀç´Â Á¦°Å°¡ ¾Æ´Ñ ºñÈ°¼ºÈ­·Î µÒ)
-        foreach (Transform child in transform)
-        {
-            child.gameObject.SetActive(false);
-        }
+        // ì›ë³¸ ìì‹ ì˜¤ë¸Œì íŠ¸ ì œê±°
+        DestroyAllChildren();
 
-        // Combine °á°ú¹°À» ÀÚ½ÄÀ¸·Î Ãß°¡
+        // Combine ê²°ê³¼ë¬¼ì„ ìì‹ìœ¼ë¡œ ì¶”ê°€
         output.transform.parent = transform;
         output.transform.SetSiblingIndex(0);
     }
 
+    public void DestroyAllChildren() 
+    {
+        int oc = 0;
+        foreach (Transform child in transform)
+        {
+            oc++;
+            Destroy(child.gameObject);
+            //child.gameObject.SetActive(false);
+        }
+        Debug.Log($"ì‚¬ìš©í•œ ìì‹ ì˜¤ë¸Œì íŠ¸ outputì„ ì‚­ì œ. ì‚­ì œí•œ ê°œìˆ˜ : {oc}");
+    }
 }
